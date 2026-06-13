@@ -514,3 +514,259 @@ $(document).ready(function() {
         ];
     }
 });
+
+
+// ======================= FITUR ANALISIS LANJUTAN =======================
+
+// 1. FILTER TANGGAL (Date Range Picker)
+function addDateFilter() {
+    const filterHtml = `
+        <div class="date-filter-bar mb-4 p-3 bg-white rounded-3 shadow-sm">
+            <div class="row align-items-center">
+                <div class="col-md-3">
+                    <label class="fw-bold"><i class="bi bi-calendar-range"></i> Periode Analisis</label>
+                </div>
+                <div class="col-md-4">
+                    <input type="date" id="startDate" class="form-control" placeholder="Tanggal Mulai">
+                </div>
+                <div class="col-md-4">
+                    <input type="date" id="endDate" class="form-control" placeholder="Tanggal Akhir">
+                </div>
+                <div class="col-md-1">
+                    <button id="applyFilter" class="btn btn-primary btn-sm w-100">Terapkan</button>
+                </div>
+            </div>
+            <div class="row mt-2">
+                <div class="col-12">
+                    <button class="btn btn-sm btn-outline-secondary me-2 quick-filter" data-days="7">7 Hari</button>
+                    <button class="btn btn-sm btn-outline-secondary me-2 quick-filter" data-days="30">30 Hari</button>
+                    <button class="btn btn-sm btn-outline-secondary me-2 quick-filter" data-days="90">90 Hari</button>
+                    <button class="btn btn-sm btn-outline-secondary quick-filter" data-days="365">1 Tahun</button>
+                </div>
+            </div>
+        </div>
+    `;
+    $('.header-section').after(filterHtml);
+    
+    // Quick filter event
+    $('.quick-filter').on('click', function() {
+        const days = $(this).data('days');
+        const endDate = new Date();
+        const startDate = new Date();
+        startDate.setDate(endDate.getDate() - days);
+        $('#startDate').val(startDate.toISOString().split('T')[0]);
+        $('#endDate').val(endDate.toISOString().split('T')[0]);
+        $('#applyFilter').click();
+    });
+}
+
+// 2. TOP & BOTTOM PRODUK
+function updateTopBottomProducts(data) {
+    // Hitung penjualan per produk
+    const productSales = new Map();
+    data.c_trans.forEach(trans => {
+        const plu = trans.plu;
+        if (!plu) return;
+        const qty = trans.qty || 0;
+        const revenue = (trans.price || 0) * qty;
+        
+        if (!productSales.has(plu)) {
+            productSales.set(plu, {
+                plu: plu,
+                name: trans.descp || '-',
+                qty: 0,
+                revenue: 0
+            });
+        }
+        const p = productSales.get(plu);
+        p.qty += qty;
+        p.revenue += revenue;
+    });
+    
+    const products = Array.from(productSales.values()).sort((a,b) => b.revenue - a.revenue);
+    const top5 = products.slice(0, 5);
+    const bottom5 = products.slice(-5).reverse();
+    
+    // Display Top Products
+    let topHtml = '';
+    top5.forEach((p, i) => {
+        topHtml += `
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <div>
+                    <span class="badge bg-primary me-2">#${i+1}</span>
+                    <strong>${p.name}</strong>
+                    <small class="text-muted d-block">Qty: ${p.qty.toLocaleString()}</small>
+                </div>
+                <div class="text-end">
+                    <span class="fw-bold text-success">${formatRupiah(p.revenue)}</span>
+                </div>
+            </div>
+        `;
+    });
+    $('#topProductsList').html(topHtml || '<p class="text-muted">Belum ada data</p>');
+    
+    // Display Bottom Products
+    let bottomHtml = '';
+    bottom5.forEach((p, i) => {
+        bottomHtml += `
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <div>
+                    <span class="badge bg-danger me-2">#${products.length - i}</span>
+                    <strong>${p.name}</strong>
+                    <small class="text-muted d-block">Qty: ${p.qty.toLocaleString()}</small>
+                </div>
+                <div class="text-end">
+                    <span class="fw-bold text-danger">${formatRupiah(p.revenue)}</span>
+                </div>
+            </div>
+        `;
+    });
+    $('#bottomProductsList').html(bottomHtml || '<p class="text-muted">Belum ada data</p>');
+}
+
+// 3. ANALISIS JAM SIBUK (Hourly Analysis)
+function updateHourlyAnalysis(transactions) {
+    const hourlyData = new Array(24).fill(0);
+    transactions.forEach(trans => {
+        if (trans.tgl_trs) {
+            const hour = new Date(trans.tgl_trs).getHours();
+            hourlyData[hour]++;
+        }
+    });
+    
+    const maxHour = hourlyData.indexOf(Math.max(...hourlyData));
+    const minHour = hourlyData.indexOf(Math.min(...hourlyData.filter(h => h > 0)));
+    const avgPerHour = (transactions.length / 24).toFixed(1);
+    
+    $('#peakHour').text(`${maxHour}:00 - ${maxHour+1}:00`);
+    $('#peakHourCount').text(`${hourlyData[maxHour]} transaksi`);
+    $('#slowHour').text(`${minHour}:00 - ${minHour+1}:00`);
+    $('#slowHourCount').text(`${hourlyData[minHour] || 0} transaksi`);
+    $('#avgHourly').text(`${avgPerHour} transaksi/jam`);
+    
+    // Hourly chart
+    const ctx = document.getElementById('hourlyChart');
+    if (ctx && window.hourlyChart) window.hourlyChart.destroy();
+    if (ctx) {
+        window.hourlyChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: [...Array(24).keys()].map(h => `${h}:00`),
+                datasets: [{
+                    label: 'Jumlah Transaksi',
+                    data: hourlyData,
+                    backgroundColor: '#667eea',
+                    borderRadius: 5
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: { legend: { display: false } }
+            }
+        });
+    }
+}
+
+// 4. ANALISIS MEMBER vs NON-MEMBER
+function updateMemberAnalysis(data) {
+    const memberSales = data.c_tsale.filter(s => s.member && s.member !== '-');
+    const nonMemberSales = data.c_tsale.filter(s => !s.member || s.member === '-');
+    
+    const memberRevenue = memberSales.reduce((sum, s) => sum + (s.jum || 0), 0);
+    const nonMemberRevenue = nonMemberSales.reduce((sum, s) => sum + (s.jum || 0), 0);
+    const memberCount = memberSales.length;
+    const nonMemberCount = nonMemberSales.length;
+    const memberPercent = data.c_tsale.length > 0 ? (memberCount / data.c_tsale.length * 100).toFixed(1) : 0;
+    
+    $('#memberCount').text(memberCount.toLocaleString());
+    $('#memberRevenue').text(formatRupiah(memberRevenue));
+    $('#memberPercent').text(`${memberPercent}%`);
+    $('#nonMemberCount').text(nonMemberCount.toLocaleString());
+    $('#nonMemberRevenue').text(formatRupiah(nonMemberRevenue));
+    $('#nonMemberPercent').text(`${(100 - memberPercent).toFixed(1)}%`);
+    
+    // Member vs Non-Member Chart
+    const ctx = document.getElementById('memberChart');
+    if (ctx && window.memberChart) window.memberChart.destroy();
+    if (ctx) {
+        window.memberChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Member', 'Non-Member'],
+                datasets: [{
+                    data: [memberRevenue, nonMemberRevenue],
+                    backgroundColor: ['#10b981', '#6c757d']
+                }]
+            },
+            options: { responsive: true }
+        });
+    }
+}
+
+// 5. REKAP PER KASIR
+function updateCashierAnalysis(data) {
+    const cashierMap = new Map();
+    data.c_tsale.forEach(sale => {
+        const kasir = sale.kd_kasir || 'Unknown';
+        if (!cashierMap.has(kasir)) {
+            cashierMap.set(kasir, { count: 0, revenue: 0 });
+        }
+        const rec = cashierMap.get(kasir);
+        rec.count++;
+        rec.revenue += sale.jum || 0;
+    });
+    
+    let cashierHtml = '';
+    Array.from(cashierMap.entries())
+        .sort((a,b) => b[1].revenue - a[1].revenue)
+        .forEach(([name, data]) => {
+            cashierHtml += `
+                <tr>
+                    <td><i class="bi bi-person-circle"></i> ${name}</td>
+                    <td>${data.count.toLocaleString()} transaksi</td>
+                    <td class="text-success fw-bold">${formatRupiah(data.revenue)}</td>
+                    <td>
+                        <div class="progress" style="height: 6px;">
+                            <div class="progress-bar bg-success" style="width: ${(data.revenue / cashierMap.values().next().value.revenue * 100)}%"></div>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        });
+    $('#cashierTableBody').html(cashierHtml || '<tr><td colspan="4" class="text-center">Belum ada数据</td></tr>');
+}
+
+// 6. Dashboard Warning / Alert
+function checkAlerts(data) {
+    const alerts = [];
+    
+    // Average transaction check
+    const avgTransaction = data.c_tsale.reduce((sum, s) => sum + (s.jum || 0), 0) / data.c_tsale.length;
+    if (avgTransaction < 50000) {
+        alerts.push({ type: 'warning', message: '⚠️ Rata-rata transaksi rendah (< Rp 50.000)', icon: 'bi-arrow-down-circle' });
+    }
+    
+    // Low stock simulation (if product quantity < 5)
+    const lowStockProducts = data.m_loader.filter(p => (p.stock || 0) < 5);
+    if (lowStockProducts.length > 0) {
+        alerts.push({ type: 'danger', message: `📦 ${lowStockProducts.length} produk mendekati habis (stok < 5)`, icon: 'bi-exclamation-triangle' });
+    }
+    
+    // No sales today
+    const today = new Date().toISOString().split('T')[0];
+    const salesToday = data.c_tsale.filter(s => s.tgl_f === today);
+    if (salesToday.length === 0 && data.c_tsale.length > 0) {
+        alerts.push({ type: 'danger', message: '📉 Belum ada penjualan hari ini!', icon: 'bi-graph-down' });
+    }
+    
+    const alertHtml = alerts.map(a => `
+        <div class="alert alert-${a.type} alert-dismissible fade show mb-2" role="alert">
+            <i class="bi ${a.icon} me-2"></i>
+            ${a.message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    `).join('');
+    
+    $('#alertContainer').html(alertHtml || '<div class="alert alert-success"><i class="bi bi-check-circle"></i> Semua indikator normal ✅</div>');
+}
