@@ -1,3 +1,165 @@
+// ======================= FITUR LABA-RUGI & MARGIN =======================
+let profitLossTable = null;
+let currentPLData = null;
+
+// Initialize Profit Loss Table
+function initProfitLossTable() {
+    if (!$.fn.DataTable.isDataTable('#profitLossTable')) {
+        profitLossTable = $('#profitLossTable').DataTable({
+            pageLength: 15,
+            language: { url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/id.json' },
+            columns: [
+                { data: "plu" },
+                { data: "name" },
+                { data: "category" },
+                { data: "qty" },
+                { data: "revenue" },
+                { data: "hpp" },
+                { data: "profit" },
+                { data: "margin" },
+                { data: "contribution" }
+            ],
+            order: [[7, 'desc']]
+        });
+    }
+}
+
+// Update Profit Loss UI
+function updateProfitLossUI(plData) {
+    if (!plData) return;
+    
+    currentPLData = plData;
+    
+    const grossMarginRupiah = plData.totalRevenue - plData.totalHPP;
+    const grossMarginPercent = plData.totalRevenue > 0 ? (grossMarginRupiah / plData.totalRevenue) * 100 : 0;
+    const netMarginPercent = plData.totalRevenue > 0 ? (plData.totalProfit / plData.totalRevenue) * 100 : 0;
+    
+    // Update margin cards
+    $('#grossMarginPercent').html(`${grossMarginPercent.toFixed(2)}%`);
+    $('#grossMarginRupiah').html(`<strong>${formatRupiah(grossMarginRupiah)}</strong>`);
+    $('#netMarginPercent').html(`${netMarginPercent.toFixed(2)}%`);
+    $('#netMarginRupiah').html(`<strong>${formatRupiah(plData.totalProfit)}</strong>`);
+    
+    // Update margin bars
+    $('#grossMarginBar').css('width', `${Math.min(grossMarginPercent, 100)}%`);
+    $('#netMarginBar').css('width', `${Math.min(netMarginPercent, 100)}%`);
+    
+    // Update summary cards
+    $('#totalRevenue').text(formatRupiah(plData.totalRevenue));
+    $('#totalCost').text(formatRupiah(plData.totalHPP));
+    $('#totalProfit').text(formatRupiah(plData.totalProfit));
+    
+    const avgMargin = plData.products.reduce((sum, p) => sum + parseFloat(p.margin), 0) / plData.products.length;
+    $('#avgMargin').text(`${avgMargin.toFixed(1)}%`);
+    
+    // Update chart (akan ditambahkan di charts.js)
+    if (typeof ChartsManager !== 'undefined' && ChartsManager.updateProfitLossChartWithMargin) {
+        ChartsManager.updateProfitLossChartWithMargin(
+            plData.totalRevenue, 
+            plData.totalHPP, 
+            plData.totalProfit,
+            grossMarginPercent,
+            netMarginPercent
+        );
+    }
+    
+    // Update table
+    if (!profitLossTable) initProfitLossTable();
+    profitLossTable.clear();
+    
+    const totalProfitAll = plData.totalProfit;
+    plData.products.forEach(p => {
+        const marginValue = parseFloat(p.margin);
+        const marginClass = marginValue >= 0 ? 'profit-positive' : 'profit-negative';
+        const contribution = totalProfitAll > 0 ? (p.profit / totalProfitAll) * 100 : 0;
+        
+        profitLossTable.row.add({
+            plu: p.plu,
+            name: p.name,
+            category: p.category,
+            qty: p.qty.toLocaleString(),
+            revenue: formatRupiah(p.revenue),
+            hpp: formatRupiah(p.hpp),
+            profit: `<span class="${marginClass}">${formatRupiah(p.profit)}</span>`,
+            margin: `<span class="${marginClass}">${p.margin}%</span>`,
+            contribution: `<span class="${marginClass}">${contribution.toFixed(1)}%</span>`
+        });
+    });
+    profitLossTable.draw();
+    
+    $('#exportProfitBtn').prop('disabled', false);
+}
+
+// Print functions
+function printProfitLossReport() {
+    if (!currentPLData) return;
+    
+    const printWindow = window.open('', '_blank');
+    const currentDate = new Date().toLocaleString('id-ID');
+    
+    printWindow.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Laporan Laba-Rugi - AmandaMart</title>
+            <style>
+                body { font-family: 'Segoe UI', Arial, sans-serif; padding: 40px; }
+                .header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid #667eea; }
+                .summary-cards { display: flex; justify-content: space-between; margin-bottom: 30px; gap: 20px; }
+                .card { border: 1px solid #ddd; border-radius: 10px; padding: 15px; flex: 1; text-align: center; }
+                .margin-section { background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 20px; border-radius: 10px; margin-bottom: 30px; }
+                table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+                th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+                th { background: #667eea; color: white; }
+                .footer { text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #ddd; }
+                @media print { body { padding: 0; } }
+            </style>
+        </head>
+        <body>
+            <div class="header">
+                <h1>AmandaMart</h1>
+                <h3>Laporan Laba-Rugi</h3>
+                <p>${currentDate}</p>
+            </div>
+            <div class="summary-cards">
+                <div class="card"><h4>Total Pendapatan</h4><h3>${formatRupiah(currentPLData.totalRevenue)}</h3></div>
+                <div class="card"><h4>Total HPP</h4><h3>${formatRupiah(currentPLData.totalHPP)}</h3></div>
+                <div class="card"><h4>Laba Bersih</h4><h3>${formatRupiah(currentPLData.totalProfit)}</h3></div>
+            </div>
+            <div class="margin-section">
+                <h4>Analisis Margin</h4>
+                <div style="display: flex; justify-content: space-between;">
+                    <div><p>Margin Kotor</p><h3>${$('#grossMarginPercent').text()}</h3><p>${$('#grossMarginRupiah').text()}</p></div>
+                    <div><p>Margin Bersih</p><h3>${$('#netMarginPercent').text()}</h3><p>${$('#netMarginRupiah').text()}</p></div>
+                    <div><p>Rata-rata Margin</p><h3>${$('#avgMargin').text()}</h3></div>
+                </div>
+            </div>
+            <h4>Detail Produk (Top 20)</h4>
+            <table><thead><tr><th>Produk</th><th>Kategori</th><th>QTY</th><th>Penjualan</th><th>HPP</th><th>Laba</th><th>Margin</th></tr></thead>
+            <tbody>${currentPLData.products.slice(0,20).map(p => `<tr><td>${p.name}</td><td>${p.category}</td><td>${p.qty.toLocaleString()}</td><td>${formatRupiah(p.revenue)}</td><td>${formatRupiah(p.hpp)}</td><td>${formatRupiah(p.profit)}</td><td>${p.margin}%</td></tr>`).join('')}</tbody>
+            </table>
+            <div class="footer"><p>Dicetak dari AmandaMart SQL Analyzer pada ${currentDate}</p></div>
+        </body>
+        </html>
+    `);
+    
+    printWindow.document.close();
+    printWindow.print();
+}
+
+// Event handlers for print buttons
+$('#printProfitLossBtn').on('click', printProfitLossReport);
+$('#printMarginReportBtn').on('click', function() {
+    if (!currentPLData) return;
+    printProfitLossReport(); // Bisa dimodifikasi untuk khusus margin
+});
+
+$('#exportProfitBtn').on('click', function() {
+    if (currentPLData && typeof ExportManager !== 'undefined') {
+        ExportManager.exportProfitLoss(currentPLData);
+        showToast('Ekspor Laba-Rugi berhasil!', 'success');
+    }
+});
 // Main Application
 $(document).ready(function() {
     let globalData = null;
