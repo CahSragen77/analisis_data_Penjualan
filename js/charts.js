@@ -4,6 +4,17 @@ const ChartsManager = (function() {
     let paymentChart = null;
     let profitLossChart = null;
     
+    function formatRupiah(val) {
+        if (val === undefined || val === null) return 'Rp 0';
+        let num = parseFloat(val);
+        if (isNaN(num)) return 'Rp 0';
+        return new Intl.NumberFormat('id-ID', {
+            style: 'currency',
+            currency: 'IDR',
+            minimumFractionDigits: 0
+        }).format(num);
+    }
+    
     // Generate summary from sales data
     function generateSummaryAndCharts(salesData) {
         const groupMap = new Map();
@@ -22,7 +33,6 @@ const ChartsManager = (function() {
             const nominal = sale.jum || 0;
             rec.total += nominal;
             
-            // Payment method detection
             let metode = 'cash';
             if (sale.j_card) {
                 const jcardUpper = sale.j_card.toString().toUpperCase();
@@ -59,7 +69,6 @@ const ChartsManager = (function() {
             });
         }
         
-        // Update charts
         updateTransChart(labels, countData);
         updatePaymentChart(totalCashAll, totalQrisAll, totalDebitAll);
         
@@ -69,7 +78,6 @@ const ChartsManager = (function() {
     function updateTransChart(labels, data) {
         const ctx = document.getElementById('transChart');
         if (!ctx) return;
-        
         if (transChart) transChart.destroy();
         
         transChart = new Chart(ctx, {
@@ -95,35 +103,12 @@ const ChartsManager = (function() {
                 responsive: true,
                 maintainAspectRatio: true,
                 plugins: {
-                    legend: {
-                        position: 'top',
-                        labels: {
-                            font: {
-                                size: 12,
-                                weight: 'bold'
-                            }
-                        }
-                    },
-                    tooltip: {
-                        backgroundColor: 'rgba(0,0,0,0.8)',
-                        titleColor: '#fff',
-                        bodyColor: '#fff',
-                        borderColor: '#667eea',
-                        borderWidth: 2
-                    }
+                    legend: { position: 'top', labels: { font: { size: 12, weight: 'bold' } } },
+                    tooltip: { backgroundColor: 'rgba(0,0,0,0.8)', titleColor: '#fff', bodyColor: '#fff', borderColor: '#667eea', borderWidth: 2 }
                 },
                 scales: {
-                    y: {
-                        beginAtZero: true,
-                        grid: {
-                            color: 'rgba(0,0,0,0.05)'
-                        }
-                    },
-                    x: {
-                        grid: {
-                            display: false
-                        }
-                    }
+                    y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } },
+                    x: { grid: { display: false } }
                 }
             }
         });
@@ -132,33 +117,19 @@ const ChartsManager = (function() {
     function updatePaymentChart(cash, qris, debit) {
         const ctx = document.getElementById('paymentChart');
         if (!ctx) return;
-        
         if (paymentChart) paymentChart.destroy();
         
         paymentChart = new Chart(ctx, {
             type: 'doughnut',
             data: {
                 labels: ['Cash', 'QRIS', 'Debit/Credit'],
-                datasets: [{
-                    data: [cash, qris, debit],
-                    backgroundColor: ['#10b981', '#3b82f6', '#f59e0b'],
-                    borderWidth: 0,
-                    hoverOffset: 10
-                }]
+                datasets: [{ data: [cash, qris, debit], backgroundColor: ['#10b981', '#3b82f6', '#f59e0b'], borderWidth: 0, hoverOffset: 10 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: true,
                 plugins: {
-                    legend: {
-                        position: 'bottom',
-                        labels: {
-                            font: {
-                                size: 12
-                            },
-                            padding: 15
-                        }
-                    },
+                    legend: { position: 'bottom', labels: { font: { size: 12 }, padding: 15 } },
                     tooltip: {
                         callbacks: {
                             label: (context) => {
@@ -175,109 +146,62 @@ const ChartsManager = (function() {
         });
     }
     
-    function updateProfitLossChart(revenueData, costData, profitData) {
+    function updateProfitLossChart(revenue, cost, profit) {
         const ctx = document.getElementById('profitLossChart');
         if (!ctx) return;
-        
         if (profitLossChart) profitLossChart.destroy();
         
         profitLossChart = new Chart(ctx, {
             type: 'bar',
             data: {
                 labels: ['Pendapatan', 'HPP', 'Laba Bersih'],
-                datasets: [{
-                    label: 'Nilai (Rp)',
-                    data: [revenueData, costData, profitData],
-                    backgroundColor: ['#10b981', '#ef4444', '#3b82f6'],
-                    borderRadius: 10,
-                    borderWidth: 0
-                }]
+                datasets: [{ label: 'Nilai (Rp)', data: [revenue, cost, profit], backgroundColor: ['#10b981', '#ef4444', '#3b82f6'], borderRadius: 10, borderWidth: 0 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: true,
-                plugins: {
-                    legend: {
-                        display: false
-                    },
-                    tooltip: {
-                        callbacks: {
-                            label: (context) => {
-                                return `Rp ${context.raw.toLocaleString('id-ID')}`;
-                            }
-                        }
-                    }
+                plugins: { legend: { display: false }, tooltip: { callbacks: { label: (context) => `${context.label}: ${formatRupiah(context.raw)}` } } },
+                scales: { y: { beginAtZero: true, ticks: { callback: (value) => formatRupiah(value) } } }
+            }
+        });
+    }
+    
+    function updateProfitLossChartWithMargin(revenue, cost, profit, grossMargin, netMargin) {
+        const ctx = document.getElementById('profitLossChart');
+        if (!ctx) return;
+        if (profitLossChart) profitLossChart.destroy();
+        
+        profitLossChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Pendapatan', 'HPP', 'Laba Bersih'],
+                datasets: [{ label: 'Nilai (Rp)', data: [revenue, cost, profit], backgroundColor: ['#10b981', '#ef4444', '#3b82f6'], borderRadius: 10, borderWidth: 0 }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: { 
+                    legend: { display: false }, 
+                    tooltip: { 
+                        callbacks: { 
+                            label: (context) => `${context.label}: ${formatRupiah(context.raw)}` 
+                        } 
+                    } 
                 },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: {
-                            callback: (value) => {
-                                return formatRupiah(value);
-                            }
-                        }
-                    }
+                scales: { 
+                    y: { 
+                        beginAtZero: true, 
+                        ticks: { callback: (value) => formatRupiah(value) } 
+                    } 
                 }
             }
         });
     }
     
-    function formatRupiah(val) {
-        if (val === undefined || val === null) return '0';
-        let num = parseFloat(val);
-        if (isNaN(num)) return val;
-        return new Intl.NumberFormat('id-ID', {
-            style: 'currency',
-            currency: 'IDR',
-            minimumFractionDigits: 0
-        }).format(num);
-    }
-    
     return {
         generateSummaryAndCharts: generateSummaryAndCharts,
         updateProfitLossChart: updateProfitLossChart,
+        updateProfitLossChartWithMargin: updateProfitLossChartWithMargin,
         formatRupiah: formatRupiah
     };
 })();
-
-
-// Tambahkan ke dalam ChartsManager
-function updateProfitLossChartWithMargin(revenue, cost, profit, grossMargin, netMargin) {
-    const ctx = document.getElementById('profitLossChart');
-    if (!ctx) return;
-    
-    if (window.profitLossChart) window.profitLossChart.destroy();
-    
-    window.profitLossChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: ['Pendapatan', 'HPP', 'Laba Bersih'],
-            datasets: [{
-                label: 'Nilai (Rp)',
-                data: [revenue, cost, profit],
-                backgroundColor: ['#10b981', '#ef4444', '#3b82f6'],
-                borderRadius: 10
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: true,
-            plugins: {
-                tooltip: {
-                    callbacks: {
-                        label: (context) => `${context.label}: ${formatRupiah(context.raw)}`
-                    }
-                }
-            },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    ticks: { callback: (value) => formatRupiah(value) }
-                }
-            }
-        }
-    });
-}
-
-// Export ke ChartsManager
-ChartsManager.updateProfitLossChartWithMargin = updateProfitLossChartWithMargin;
