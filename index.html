@@ -271,10 +271,10 @@
         </div>
 
         
-        <!-- Laba-Rugi Tab -->
+        <!-- Laba-Rugi Tab (VERSION FIX) -->
 <div class="tab-pane fade" id="profitloss" role="tabpanel">
     <div class="row g-4 mb-4">
-        <!-- Margin Report Card NEW -->
+        <!-- Margin Report Card -->
         <div class="col-12">
             <div class="margin-report-card">
                 <div class="row align-items-center">
@@ -362,7 +362,7 @@
         </div>
     </div>
 
-    <!-- Detail Table -->
+    <!-- Detail Table (HANYA SATU) -->
     <div class="card data-table-card">
         <div class="card-header bg-transparent d-flex justify-content-between align-items-center">
             <h5 class="mb-0"><i class="bi bi-calculator"></i> Detail Laba-Rugi per Produk</h5>
@@ -375,9 +375,15 @@
                 <table id="profitLossTable" class="table table-hover mb-0">
                     <thead>
                         <tr>
-                            <th>PLU</th><th>Produk</th><th>Kategori</th><th>QTY</th>
-                            <th>Penjualan</th><th>HPP</th><th>Laba</th>
-                            <th>Margin</th><th>Kontribusi</th>
+                            <th>PLU</th>
+                            <th>Produk</th>
+                            <th>Kategori</th>
+                            <th>QTY</th>
+                            <th>Penjualan</th>
+                            <th>HPP</th>
+                            <th>Laba</th>
+                            <th>Margin</th>
+                            <th>Kontribusi</th>
                         </tr>
                     </thead>
                     <tbody id="profitLossBody">
@@ -388,41 +394,6 @@
         </div>
     </div>
 </div>
-
-                <!-- Detailed Profit Loss Table -->
-                <div class="col-12">
-                    <div class="card data-table-card">
-                        <div class="card-header bg-transparent">
-                            <h5 class="mb-0"><i class="bi bi-calculator"></i> Detail Laba-Rugi per Produk</h5>
-                        </div>
-                        <div class="card-body p-0">
-                            <div class="table-responsive">
-                                <table id="profitLossTable" class="table table-hover mb-0">
-                                    <thead>
-                                        <tr>
-                                            <th>PLU</th>
-                                            <th>Produk</th>
-                                            <th>Kategori</th>
-                                            <th>QTY Terjual</th>
-                                            <th>Total Penjualan</th>
-                                            <th>HPP Total</th>
-                                            <th>Laba Kotor</th>
-                                            <th>Margin</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="profitLossBody">
-                                        <tr><td colspan="8" class="text-center text-muted">
-                                            <i class="bi bi-cloud-arrow-up"></i> Silakan upload file SQL terlebih dahulu
-                                        </td></tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <footer class="mt-5 pt-3 text-center text-muted border-top">
         <i class="bi bi-database"></i> AmandaMart Financial Analyzer | 
