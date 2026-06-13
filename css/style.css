@@ -1,0 +1,447 @@
+/* Modern CSS Variables */
+:root {
+    --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --success-gradient: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+    --danger-gradient: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+    --warning-gradient: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+    --info-gradient: linear-gradient(135deg, #30cfd0 0%, #330867 100%);
+    
+    --primary-color: #667eea;
+    --success-color: #10b981;
+    --danger-color: #ef4444;
+    --warning-color: #f59e0b;
+    --info-color: #3b82f6;
+    
+    --bg-dark: #0f172a;
+    --bg-light: #f8fafc;
+    --card-shadow: 0 10px 40px rgba(0,0,0,0.08);
+    --card-shadow-hover: 0 20px 50px rgba(0,0,0,0.12);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    min-height: 100vh;
+}
+
+/* Modern Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--primary-color);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #764ba2;
+}
+
+/* Gradient Text */
+.gradient-text {
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Header Section */
+.header-section {
+    background: white;
+    border-radius: 20px;
+    padding: 20px 25px;
+    margin-bottom: 25px;
+    box-shadow: var(--card-shadow);
+    transition: all 0.3s ease;
+}
+
+.header-section:hover {
+    box-shadow: var(--card-shadow-hover);
+    transform: translateY(-2px);
+}
+
+/* Modern Buttons */
+.btn-modern {
+    border-radius: 12px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-modern::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+}
+
+.btn-modern:hover::before {
+    width: 300px;
+    height: 300px;
+}
+
+.btn-primary {
+    background: var(--primary-gradient);
+    border: none;
+    box-shadow: 0 4px 15px rgba(102,126,234,0.4);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102,126,234,0.5);
+}
+
+.btn-excel {
+    background: linear-gradient(135deg, #1e7e34 0%, #28a745 100%);
+    color: white;
+    border: none;
+    box-shadow: 0 4px 15px rgba(40,167,69,0.3);
+}
+
+.btn-excel:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(40,167,69,0.4);
+    color: white;
+}
+
+/* Modern Tabs */
+.modern-tabs {
+    border: none;
+    gap: 10px;
+}
+
+.modern-tabs .nav-link {
+    border: none;
+    border-radius: 12px;
+    padding: 12px 24px;
+    font-weight: 600;
+    color: #64748b;
+    transition: all 0.3s ease;
+    background: rgba(255,255,255,0.5);
+}
+
+.modern-tabs .nav-link:hover {
+    background: white;
+    color: var(--primary-color);
+    transform: translateY(-2px);
+}
+
+.modern-tabs .nav-link.active {
+    background: var(--primary-gradient);
+    color: white;
+    box-shadow: 0 4px 15px rgba(102,126,234,0.4);
+}
+
+/* Stat Cards */
+.stat-card {
+    background: white;
+    border-radius: 20px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    box-shadow: var(--card-shadow);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    transition: left 0.5s;
+}
+
+.stat-card:hover::before {
+    left: 100%;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--card-shadow-hover);
+}
+
+.stat-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+    color: white;
+}
+
+.stat-card-primary .stat-icon {
+    background: var(--primary-gradient);
+}
+
+.stat-card-success .stat-icon {
+    background: var(--success-gradient);
+}
+
+.stat-card-info .stat-icon {
+    background: var(--info-gradient);
+}
+
+.stat-card-warning .stat-icon {
+    background: var(--warning-gradient);
+}
+
+.stat-card-danger .stat-icon {
+    background: var(--danger-gradient);
+}
+
+.stat-info h3 {
+    font-size: 28px;
+    font-weight: 700;
+    margin: 0;
+    color: #1e293b;
+}
+
+.stat-info p {
+    margin: 0;
+    color: #64748b;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+/* Chart Cards */
+.chart-card {
+    border: none;
+    border-radius: 20px;
+    box-shadow: var(--card-shadow);
+    transition: all 0.3s ease;
+    background: white;
+}
+
+.chart-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--card-shadow-hover);
+}
+
+.chart-card .card-header {
+    background: transparent;
+    border-bottom: 2px solid #f1f5f9;
+    padding: 20px 25px 0 25px;
+}
+
+.chart-card .card-header h5 {
+    font-weight: 700;
+    color: #1e293b;
+}
+
+.chart-card .card-body {
+    padding: 20px 25px;
+}
+
+/* Data Table Card */
+.data-table-card {
+    border: none;
+    border-radius: 20px;
+    box-shadow: var(--card-shadow);
+    overflow: hidden;
+    background: white;
+}
+
+.data-table-card .card-header {
+    background: transparent;
+    padding: 20px 25px;
+    border-bottom: 2px solid #f1f5f9;
+}
+
+.data-table-card .card-header h5 {
+    font-weight: 700;
+    color: #1e293b;
+}
+
+/* Modern Table */
+.table {
+    margin: 0;
+}
+
+.table thead th {
+    background: #f8fafc;
+    color: #1e293b;
+    font-weight: 600;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid #e2e8f0;
+    padding: 15px;
+}
+
+.table tbody td {
+    padding: 12px 15px;
+    vertical-align: middle;
+    color: #475569;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.table tbody tr:hover {
+    background: #f8fafc;
+    transform: scale(1.01);
+    transition: all 0.2s ease;
+}
+
+/* DataTables Customization */
+.dataTables_wrapper .dataTables_length,
+.dataTables_wrapper .dataTables_filter {
+    margin: 15px 20px;
+}
+
+.dataTables_wrapper .dataTables_filter input {
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+    padding: 8px 15px;
+    margin-left: 10px;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+    border-radius: 8px;
+    margin: 0 3px;
+    padding: 6px 12px;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button.current {
+    background: var(--primary-gradient);
+    color: white !important;
+    border: none;
+}
+
+/* Toast Notification */
+.info-toast {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    z-index: 9999;
+    min-width: 320px;
+}
+
+.toast-content {
+    background: white;
+    border-radius: 12px;
+    padding: 15px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: var(--card-shadow);
+    border-left: 4px solid var(--success-color);
+    animation: slideInRight 0.3s ease;
+}
+
+.toast-content i {
+    font-size: 24px;
+    color: var(--success-color);
+}
+
+.toast-content span {
+    color: #1e293b;
+    font-weight: 500;
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .stat-card {
+        padding: 15px;
+    }
+    
+    .stat-icon {
+        width: 45px;
+        height: 45px;
+        font-size: 22px;
+    }
+    
+    .stat-info h3 {
+        font-size: 20px;
+    }
+    
+    .modern-tabs .nav-link {
+        padding: 8px 16px;
+        font-size: 14px;
+    }
+    
+    .btn-modern {
+        padding: 8px 16px;
+        font-size: 14px;
+    }
+}
+
+/* Loading Animation */
+@keyframes shimmer {
+    0% {
+        background-position: -1000px 0;
+    }
+    100% {
+        background-position: 1000px 0;
+    }
+}
+
+.loading {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 1000px 100%;
+    animation: shimmer 2s infinite;
+}
+
+/* Chart Container */
+canvas {
+    max-height: 350px;
+    width: 100% !important;
+}
+
+/* Profit/Loss Specific */
+.profit-positive {
+    color: var(--success-color);
+    font-weight: 600;
+}
+
+.profit-negative {
+    color: var(--danger-color);
+    font-weight: 600;
+}
+
+/* Footer */
+footer {
+    font-size: 13px;
+}
+
+footer i {
+    margin: 0 5px;
+}
