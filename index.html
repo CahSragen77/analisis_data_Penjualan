@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>AmandaMart SQL Analyzer - Financial Dashboard</title>
+    
+    <!-- CSS Dependencies -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="container-fluid px-3 px-lg-4 py-3">
+    <!-- Header Section -->
+    <div class="header-section animate__animated animate__fadeInDown">
+        <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+            <div>
+                <h1 class="fw-bold mb-0 gradient-text">
+                    <i class="bi bi-database-gear"></i> AmandaMart SQL Analyzer
+                </h1>
+                <p class="text-muted mt-2">
+                    <i class="bi bi-cloud-upload"></i> Upload file <code>.sql</code> (dump PostgreSQL) — 
+                    <strong>Analisis keuangan otomatis & real-time</strong>
+                </p>
+            </div>
+            <div class="button-group">
+                <label for="sqlUpload" class="btn btn-primary btn-modern px-4 py-2">
+                    <i class="bi bi-upload"></i> Upload SQL
+                </label>
+                <input type="file" id="sqlUpload" accept=".sql,.txt" style="display:none">
+                <button id="exportAllBtn" class="btn btn-excel btn-modern ms-2 px-4 py-2" disabled>
+                    <i class="bi bi-file-spreadsheet"></i> Ekspor Excel
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <ul class="nav nav-tabs modern-tabs mb-4" id="mainTab" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#dashboard" type="button" role="tab">
+                <i class="bi bi-speedometer2"></i> Dashboard
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#profitloss" type="button" role="tab">
+                <i class="bi bi-graph-up"></i> Laba-Rugi
+            </button>
+        </li>
+    </ul>
+
+    <!-- Tab Content -->
+    <div class="tab-content">
+        <!-- Dashboard Tab -->
+        <div class="tab-pane fade show active" id="dashboard" role="tabpanel">
+            <!-- Stat Cards -->
+            <div class="row g-4 mb-4">
+                <div class="col-md-3 col-6">
+                    <div class="stat-card stat-card-primary animate__animated animate__fadeInUp">
+                        <div class="stat-icon">
+                            <i class="bi bi-receipt"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="statTrans">0</h3>
+                            <p>Total Transaksi</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="stat-card stat-card-success animate__animated animate__fadeInUp" style="animation-delay: 0.1s">
+                        <div class="stat-icon">
+                            <i class="bi bi-cash-stack"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="statSale">0</h3>
+                            <p>Total Penjualan</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="stat-card stat-card-info animate__animated animate__fadeInUp" style="animation-delay: 0.2s">
+                        <div class="stat-icon">
+                            <i class="bi bi-people"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="statMember">0</h3>
+                            <p>Member Aktif</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="stat-card stat-card-warning animate__animated animate__fadeInUp" style="animation-delay: 0.3s">
+                        <div class="stat-icon">
+                            <i class="bi bi-box-seam"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="statProd">0</h3>
+                            <p>Total Produk</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Row -->
+            <div class="row g-4 mb-4">
+                <div class="col-lg-7">
+                    <div class="card chart-card animate__animated animate__fadeInLeft">
+                        <div class="card-header bg-transparent border-0 pt-3">
+                            <h5 class="mb-0"><i class="bi bi-bar-chart-steps"></i> Tren Transaksi Harian</h5>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="transChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-5">
+                    <div class="card chart-card animate__animated animate__fadeInRight">
+                        <div class="card-header bg-transparent border-0 pt-3">
+                            <h5 class="mb-0"><i class="bi bi-pie-chart"></i> Metode Pembayaran</h5>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="paymentChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Summary Table -->
+            <div class="card data-table-card animate__animated animate__fadeInUp">
+                <div class="card-header bg-transparent">
+                    <h5 class="mb-0"><i class="bi bi-table"></i> Ringkasan Transaksi per Tanggal</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table id="summaryTable" class="table table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Tanggal</th>
+                                    <th>Jumlah Transaksi</th>
+                                    <th>Total Penjualan</th>
+                                    <th>Cash</th>
+                                    <th>QRIS</th>
+                                    <th>Debit/Credit</th>
+                                    <th>Rata-Rata</th>
+                                </tr>
+                            </thead>
+                            <tbody id="summaryBody">
+                                <tr><td colspan="7" class="text-center text-muted">
+                                    <i class="bi bi-cloud-arrow-up"></i> Silakan upload file SQL terlebih dahulu
+                                </td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Laba-Rugi Tab -->
+        <div class="tab-pane fade" id="profitloss" role="tabpanel">
+            <div class="row g-4">
+                <!-- Profit Loss Summary Cards -->
+                <div class="col-md-4">
+                    <div class="stat-card stat-card-primary">
+                        <div class="stat-icon">
+                            <i class="bi bi-wallet2"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="totalRevenue">Rp 0</h3>
+                            <p>Total Pendapatan</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="stat-card stat-card-danger">
+                        <div class="stat-icon">
+                            <i class="bi bi-cart-x"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="totalCost">Rp 0</h3>
+                            <p>Total HPP</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="stat-card stat-card-success">
+                        <div class="stat-icon">
+                            <i class="bi bi-piggy-bank"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="totalProfit" class="text-success">Rp 0</h3>
+                            <p>Laba Bersih</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Profit Loss Chart -->
+                <div class="col-12">
+                    <div class="card chart-card">
+                        <div class="card-header bg-transparent">
+                            <h5 class="mb-0"><i class="bi bi-graph-up"></i> Grafik Laba-Rugi</h5>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="profitLossChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Detailed Profit Loss Table -->
+                <div class="col-12">
+                    <div class="card data-table-card">
+                        <div class="card-header bg-transparent">
+                            <h5 class="mb-0"><i class="bi bi-calculator"></i> Detail Laba-Rugi per Produk</h5>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table id="profitLossTable" class="table table-hover mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th>PLU</th>
+                                            <th>Produk</th>
+                                            <th>Kategori</th>
+                                            <th>QTY Terjual</th>
+                                            <th>Total Penjualan</th>
+                                            <th>HPP Total</th>
+                                            <th>Laba Kotor</th>
+                                            <th>Margin</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="profitLossBody">
+                                        <tr><td colspan="8" class="text-center text-muted">
+                                            <i class="bi bi-cloud-arrow-up"></i> Silakan upload file SQL terlebih dahulu
+                                        </td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="mt-5 pt-3 text-center text-muted border-top">
+        <i class="bi bi-database"></i> AmandaMart Financial Analyzer | 
+        <i class="bi bi-graph-up"></i> Real-time Analytics | 
+        <i class="bi bi-shield-check"></i> Data Security
+    </footer>
+    
+    <div id="toastMsg" class="info-toast" style="display: none;">
+        <div class="toast-content">
+            <i class="bi bi-check-circle-fill"></i>
+            <span id="toastText"></span>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript Dependencies -->
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Custom JavaScript -->
+<script src="js/parser.js"></script>
+<script src="js/charts.js"></script>
+<script src="js/export.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
