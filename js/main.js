@@ -159,8 +159,11 @@ function printProfitLossReport() {
                 </div>
             </div>
             <h4>Detail Produk (Top 20)</h4>
-            <table><thead><tr><th>Produk</th><th>Kategori</th><th>QTY</th><th>Penjualan</th><th>HPP</th><th>Laba</th><th>Margin</th></tr></thead>
-            <tbody>${currentPLData.products.slice(0,20).map(p => `<tr><td>${p.name}</td><td>${p.category}</td><td>${p.qty.toLocaleString()}</td><td>${formatRupiah(p.revenue)}</td><td>${formatRupiah(p.hpp)}</td><td>${formatRupiah(p.profit)}</td><td>${p.margin}%</td></tr>`).join('')}</tbody>
+            <table class="table table-bordered">
+                <thead>
+                    <tr><th>Produk</th><th>Kategori</th><th>QTY</th><th>Penjualan</th><th>HPP</th><th>Laba</th><th>Margin</th></tr>
+                </thead>
+                <tbody>${currentPLData.products.slice(0,20).map(p => `<tr><td>${p.name}</td><td>${p.category}</td><td>${p.qty.toLocaleString()}</td><td>${formatRupiah(p.revenue)}</td><td>${formatRupiah(p.hpp)}</td><td>${formatRupiah(p.profit)}</td><td>${p.margin}%</td>`).join('')}</tbody>
             </table>
             <div class="footer"><p>Dicetak dari AmandaMart SQL Analyzer pada ${currentDate}</p></div>
         </body>
@@ -362,13 +365,32 @@ function getEodColumns() {
 
 // ======================= MAIN DOCUMENT READY =======================
 $(document).ready(function() {
-    // Initialize DataTables
+    // Hancurkan DataTables lama jika ada (untuk menghindari error)
+    if ($.fn.DataTable.isDataTable('#summaryTable')) {
+        $('#summaryTable').DataTable().destroy();
+    }
+    
+    // Initialize DataTables dengan DEFINISI KOLOM EKSPLISIT
     const transTable = $('#transTable').DataTable({ data: [], columns: getTransColumns(), pageLength: 15, language: { url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/id.json' } });
     const saleTable = $('#saleTable').DataTable({ data: [], columns: getSaleColumns(), pageLength: 10, language: { url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/id.json' } });
     const memberTable = $('#memberTable').DataTable({ data: [], columns: getMemberColumns(), pageLength: 10, language: { url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/id.json' } });
     const productTable = $('#productTable').DataTable({ data: [], columns: getProductColumns(), pageLength: 10, language: { url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/id.json' } });
     const eodTable = $('#eodTable').DataTable({ data: [], columns: getEodColumns(), pageLength: 10, language: { url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/id.json' } });
-    const summaryTable = $('#summaryTable').DataTable({ pageLength: 10, language: { url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/id.json' } });
+    
+    // SUMMARY TABLE - DENGAN DEFINISI KOLOM YANG JELAS (7 KOLOM)
+    const summaryTable = $('#summaryTable').DataTable({
+        pageLength: 10,
+        language: { url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/id.json' },
+        columns: [
+            { title: "Tanggal" },
+            { title: "Jumlah Transaksi" },
+            { title: "Total Penjualan" },
+            { title: "Cash" },
+            { title: "QRIS" },
+            { title: "Debit/Credit" },
+            { title: "Rata-Rata" }
+        ]
+    });
     
     // Add date filter
     addDateFilter();
@@ -384,58 +406,30 @@ $(document).ready(function() {
                 const parsed = SQLParser.parseSQLCopy(e.target.result);
                 globalData = parsed;
                 
-                // Update UI
+                // Update stat cards
                 $('#statTrans').text(parsed.c_trans.length.toLocaleString());
                 $('#statSale').text(parsed.c_tsale.length.toLocaleString());
                 $('#statMember').text(parsed.m_cust.length.toLocaleString());
                 $('#statProd').text(parsed.m_loader.length.toLocaleString());
                 
+                // Update summary table
                 if (parsed.c_tsale.length > 0) {
-    const summaryRows = ChartsManager.generateSummaryAndCharts(parsed.c_tsale);
-    summaryTable.clear();
-    
-    summaryRows.forEach(r => {
-        // Buat array data sesuai dengan kolom yang ADA di HTML
-        const rowData = [];
-        
-        // Ambil semua kolom dari header tabel
-        $('#summaryTable thead th').each(function(index) {
-            const headerText = $(this).text().trim();
-            
-            // Mapping header ke properti data
-            switch(headerText) {
-                case 'Tanggal':
-                    rowData.push(r.tanggal);
-                    break;
-                case 'Jumlah Transaksi':
-                    rowData.push(r.total_trx.toLocaleString());
-                    break;
-                case 'Total Penjualan':
-                    rowData.push(ChartsManager.formatRupiah(r.nominal));
-                    break;
-                case 'Cash':
-                    rowData.push(ChartsManager.formatRupiah(r.cash));
-                    break;
-                case 'QRIS':
-                    rowData.push(ChartsManager.formatRupiah(r.qris));
-                    break;
-                case 'Debit/Credit':
-                    rowData.push(ChartsManager.formatRupiah(r.debit));
-                    break;
-                case 'Rata-Rata':
-                    rowData.push(ChartsManager.formatRupiah(r.avg));
-                    break;
-                default:
-                    rowData.push('-');
-                    break;
-            }
-        });
-        
-        summaryTable.row.add(rowData);
-    });
-    
-    summaryTable.draw();
-}
+                    const summaryRows = ChartsManager.generateSummaryAndCharts(parsed.c_tsale);
+                    summaryTable.clear();
+                    
+                    summaryRows.forEach(r => {
+                        summaryTable.row.add([
+                            r.tanggal,
+                            r.total_trx.toLocaleString(),
+                            ChartsManager.formatRupiah(r.nominal),
+                            ChartsManager.formatRupiah(r.cash),
+                            ChartsManager.formatRupiah(r.qris),
+                            ChartsManager.formatRupiah(r.debit),
+                            ChartsManager.formatRupiah(r.avg)
+                        ]);
+                    });
+                    summaryTable.draw();
+                }
                 
                 // Update detail tables
                 transTable.clear(); transTable.rows.add(parsed.c_trans.map(t => ({ no_urut: t.no_urut, plu: t.plu, descp: t.descp || '-', kategori: t.kategori, price: ChartsManager.formatRupiah(t.price), qty: t.qty, kd_kasir: t.kd_kasir, no_bill: t.no_bill, tgl_trs: t.tgl_trs, kd_store: t.kd_store, total: ChartsManager.formatRupiah((t.price||0)*(t.qty||0)) }))).draw();
