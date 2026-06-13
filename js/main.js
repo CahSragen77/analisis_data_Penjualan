@@ -391,13 +391,51 @@ $(document).ready(function() {
                 $('#statProd').text(parsed.m_loader.length.toLocaleString());
                 
                 if (parsed.c_tsale.length > 0) {
-                    const summaryRows = ChartsManager.generateSummaryAndCharts(parsed.c_tsale);
-                    summaryTable.clear();
-                    summaryRows.forEach(r => {
-                        summaryTable.row.add([r.tanggal, r.total_trx.toLocaleString(), ChartsManager.formatRupiah(r.nominal), ChartsManager.formatRupiah(r.cash), ChartsManager.formatRupiah(r.qris), ChartsManager.formatRupiah(r.debit), ChartsManager.formatRupiah(r.avg)]);
-                    });
-                    summaryTable.draw();
-                }
+    const summaryRows = ChartsManager.generateSummaryAndCharts(parsed.c_tsale);
+    summaryTable.clear();
+    
+    summaryRows.forEach(r => {
+        // Buat array data sesuai dengan kolom yang ADA di HTML
+        const rowData = [];
+        
+        // Ambil semua kolom dari header tabel
+        $('#summaryTable thead th').each(function(index) {
+            const headerText = $(this).text().trim();
+            
+            // Mapping header ke properti data
+            switch(headerText) {
+                case 'Tanggal':
+                    rowData.push(r.tanggal);
+                    break;
+                case 'Jumlah Transaksi':
+                    rowData.push(r.total_trx.toLocaleString());
+                    break;
+                case 'Total Penjualan':
+                    rowData.push(ChartsManager.formatRupiah(r.nominal));
+                    break;
+                case 'Cash':
+                    rowData.push(ChartsManager.formatRupiah(r.cash));
+                    break;
+                case 'QRIS':
+                    rowData.push(ChartsManager.formatRupiah(r.qris));
+                    break;
+                case 'Debit/Credit':
+                    rowData.push(ChartsManager.formatRupiah(r.debit));
+                    break;
+                case 'Rata-Rata':
+                    rowData.push(ChartsManager.formatRupiah(r.avg));
+                    break;
+                default:
+                    rowData.push('-');
+                    break;
+            }
+        });
+        
+        summaryTable.row.add(rowData);
+    });
+    
+    summaryTable.draw();
+}
                 
                 // Update detail tables
                 transTable.clear(); transTable.rows.add(parsed.c_trans.map(t => ({ no_urut: t.no_urut, plu: t.plu, descp: t.descp || '-', kategori: t.kategori, price: ChartsManager.formatRupiah(t.price), qty: t.qty, kd_kasir: t.kd_kasir, no_bill: t.no_bill, tgl_trs: t.tgl_trs, kd_store: t.kd_store, total: ChartsManager.formatRupiah((t.price||0)*(t.qty||0)) }))).draw();
