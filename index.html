@@ -107,6 +107,115 @@
                 </div>
             </div>
 
+            <!-- Alert Container -->
+<div id="alertContainer" class="mb-4"></div>
+
+<!-- Date Filter -->
+<div id="dateFilterContainer"></div>
+
+<!-- Advanced Analytics Section -->
+<div class="row g-4 mb-4">
+    <!-- Top & Bottom Products -->
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-header bg-transparent">
+                <h5><i class="bi bi-trophy"></i> Top 5 Produk Terlaris</h5>
+            </div>
+            <div class="card-body" id="topProductsList">
+                <p class="text-muted">Loading...</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-header bg-transparent">
+                <h5><i class="bi bi-emoji-frown"></i> Bottom 5 Produk</h5>
+            </div>
+            <div class="card-body" id="bottomProductsList">
+                <p class="text-muted">Loading...</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Hourly & Member Analysis -->
+<div class="row g-4 mb-4">
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-header bg-transparent">
+                <h5><i class="bi bi-clock-history"></i> Jam Sibuk (Hourly Analysis)</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="hourlyChart" height="200"></canvas>
+                <hr>
+                <div class="row text-center">
+                    <div class="col-4">
+                        <small class="text-muted">Jam Tersibuk</small>
+                        <h6 class="text-primary" id="peakHour">-</h6>
+                        <small id="peakHourCount">0</small>
+                    </div>
+                    <div class="col-4">
+                        <small class="text-muted">Jam Sepi</small>
+                        <h6 class="text-warning" id="slowHour">-</h6>
+                        <small id="slowHourCount">0</small>
+                    </div>
+                    <div class="col-4">
+                        <small class="text-muted">Rata-rata/Jam</small>
+                        <h6 id="avgHourly">0</h6>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-header bg-transparent">
+                <h5><i class="bi bi-people"></i> Member vs Non-Member</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="memberChart" height="150"></canvas>
+                <div class="row mt-3 text-center">
+                    <div class="col-6">
+                        <div class="p-2 bg-success bg-opacity-10 rounded">
+                            <small>Member</small>
+                            <h6 id="memberCount">0</h6>
+                            <small class="text-success" id="memberRevenue">Rp 0</small>
+                            <div><span class="badge bg-success" id="memberPercent">0%</span></div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="p-2 bg-secondary bg-opacity-10 rounded">
+                            <small>Non-Member</small>
+                            <h6 id="nonMemberCount">0</h6>
+                            <small class="text-secondary" id="nonMemberRevenue">Rp 0</small>
+                            <div><span class="badge bg-secondary" id="nonMemberPercent">0%</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Cashier Performance -->
+<div class="card data-table-card mb-4">
+    <div class="card-header bg-transparent">
+        <h5><i class="bi bi-person-badge"></i> Performa Kasir</h5>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr><th>Kasir</th><th>Jumlah Transaksi</th><th>Total Penjualan</th><th>Kontribusi</th></tr>
+                </thead>
+                <tbody id="cashierTableBody">
+                    <tr><td colspan="4" class="text-center">Belum ada data</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
             <!-- Charts Row -->
             <div class="row g-4 mb-4">
                 <div class="col-lg-7">
@@ -161,7 +270,7 @@
             </div>
         </div>
 
-        <!-- Laba-Rugi Tab -->
+        
         <!-- Laba-Rugi Tab -->
 <div class="tab-pane fade" id="profitloss" role="tabpanel">
     <div class="row g-4 mb-4">
@@ -329,114 +438,7 @@
     </div>
 </div>
 
-    <!-- Alert Container -->
-<div id="alertContainer" class="mb-4"></div>
-
-<!-- Date Filter -->
-<div id="dateFilterContainer"></div>
-
-<!-- Advanced Analytics Section -->
-<div class="row g-4 mb-4">
-    <!-- Top & Bottom Products -->
-    <div class="col-md-6">
-        <div class="card h-100">
-            <div class="card-header bg-transparent">
-                <h5><i class="bi bi-trophy"></i> Top 5 Produk Terlaris</h5>
-            </div>
-            <div class="card-body" id="topProductsList">
-                <p class="text-muted">Loading...</p>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-6">
-        <div class="card h-100">
-            <div class="card-header bg-transparent">
-                <h5><i class="bi bi-emoji-frown"></i> Bottom 5 Produk</h5>
-            </div>
-            <div class="card-body" id="bottomProductsList">
-                <p class="text-muted">Loading...</p>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Hourly & Member Analysis -->
-<div class="row g-4 mb-4">
-    <div class="col-md-6">
-        <div class="card h-100">
-            <div class="card-header bg-transparent">
-                <h5><i class="bi bi-clock-history"></i> Jam Sibuk (Hourly Analysis)</h5>
-            </div>
-            <div class="card-body">
-                <canvas id="hourlyChart" height="200"></canvas>
-                <hr>
-                <div class="row text-center">
-                    <div class="col-4">
-                        <small class="text-muted">Jam Tersibuk</small>
-                        <h6 class="text-primary" id="peakHour">-</h6>
-                        <small id="peakHourCount">0</small>
-                    </div>
-                    <div class="col-4">
-                        <small class="text-muted">Jam Sepi</small>
-                        <h6 class="text-warning" id="slowHour">-</h6>
-                        <small id="slowHourCount">0</small>
-                    </div>
-                    <div class="col-4">
-                        <small class="text-muted">Rata-rata/Jam</small>
-                        <h6 id="avgHourly">0</h6>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-6">
-        <div class="card h-100">
-            <div class="card-header bg-transparent">
-                <h5><i class="bi bi-people"></i> Member vs Non-Member</h5>
-            </div>
-            <div class="card-body">
-                <canvas id="memberChart" height="150"></canvas>
-                <div class="row mt-3 text-center">
-                    <div class="col-6">
-                        <div class="p-2 bg-success bg-opacity-10 rounded">
-                            <small>Member</small>
-                            <h6 id="memberCount">0</h6>
-                            <small class="text-success" id="memberRevenue">Rp 0</small>
-                            <div><span class="badge bg-success" id="memberPercent">0%</span></div>
-                        </div>
-                    </div>
-                    <div class="col-6">
-                        <div class="p-2 bg-secondary bg-opacity-10 rounded">
-                            <small>Non-Member</small>
-                            <h6 id="nonMemberCount">0</h6>
-                            <small class="text-secondary" id="nonMemberRevenue">Rp 0</small>
-                            <div><span class="badge bg-secondary" id="nonMemberPercent">0%</span></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Cashier Performance -->
-<div class="card data-table-card mb-4">
-    <div class="card-header bg-transparent">
-        <h5><i class="bi bi-person-badge"></i> Performa Kasir</h5>
-    </div>
-    <div class="card-body p-0">
-        <div class="table-responsive">
-            <table class="table table-hover mb-0">
-                <thead>
-                    <tr><th>Kasir</th><th>Jumlah Transaksi</th><th>Total Penjualan</th><th>Kontribusi</th></tr>
-                </thead>
-                <tbody id="cashierTableBody">
-                    <tr><td colspan="4" class="text-center">Belum ada data</td></tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-</div>
+   
 
 <!-- JavaScript Dependencies -->
 <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
