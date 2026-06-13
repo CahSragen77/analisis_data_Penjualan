@@ -239,3 +239,45 @@ const ChartsManager = (function() {
         formatRupiah: formatRupiah
     };
 })();
+
+
+// Tambahkan ke dalam ChartsManager
+function updateProfitLossChartWithMargin(revenue, cost, profit, grossMargin, netMargin) {
+    const ctx = document.getElementById('profitLossChart');
+    if (!ctx) return;
+    
+    if (window.profitLossChart) window.profitLossChart.destroy();
+    
+    window.profitLossChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['Pendapatan', 'HPP', 'Laba Bersih'],
+            datasets: [{
+                label: 'Nilai (Rp)',
+                data: [revenue, cost, profit],
+                backgroundColor: ['#10b981', '#ef4444', '#3b82f6'],
+                borderRadius: 10
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        label: (context) => `${context.label}: ${formatRupiah(context.raw)}`
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: { callback: (value) => formatRupiah(value) }
+                }
+            }
+        }
+    });
+}
+
+// Export ke ChartsManager
+ChartsManager.updateProfitLossChartWithMargin = updateProfitLossChartWithMargin;
