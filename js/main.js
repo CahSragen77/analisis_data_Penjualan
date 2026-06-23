@@ -119,25 +119,67 @@ $(document).ready(function() {
         const tbody = $('#summaryBody');
         tbody.empty();
         
-        if (rows.length === 0) {
+        // Ambil data mentah c_tsale dari globalData yang sudah lolos parser sakti kita
+        if (!globalData || !globalData.c_tsale || globalData.c_tsale.length === 0) {
             tbody.html('<tr><td colspan="7" class="text-center text-muted">Tidak ada data penjualan</td></tr>');
-        } else {
-            rows.forEach(r => {
-                tbody.append(`
-                    <tr>
-                        <td><strong>${r.tanggal}</strong></td>
-                        <td>${r.total_trx.toLocaleString()}</td>
-                        <td class="text-success fw-bold">${ChartsManager.formatRupiah(r.nominal)}</td>
-                        <td>${ChartsManager.formatRupiah(r.cash)}</td>
-                        <td>${ChartsManager.formatRupiah(r.qris)}</td>
-                        <td>${ChartsManager.formatRupiah(r.debit)}</td>
-                        <td>${ChartsManager.formatRupiah(r.avg)}</td>
-                    </tr>
-                `);
-            });
+            return;
         }
-    }
-    
+
+        // 1. Grouping data ulang secara bersih per tanggal langsung dari database c_tsale
+        const dailySummary = {};
+        
+        globalData.c_tsale.forEach(row => {
+            const tanggal = row.tgl_f;
+            if (!tanggal) return;
+            
+            if (!dailySummary[tanggal]) {
+                dailySummary[tanggal] = {
+                    tanggal: tanggal,
+                    total_trx: 0,
+                    nominal: 0,
+                    cash: 0,
+                    qris_debit: 0, // Gabungan pembayaran mesin/card
+                    potongan: 0,   // Nilai hemat / diskon member
+                    donasi: 0,
+                    fix_setoran: 0
+                };
+            }
+            
+            // Ambil status metode pembayaran non-tunai
+            let isCard = (row.card && row.card > 0) || (row.j_card && row.j_card.toString().toUpperCase().includes('QRIS') || row.j_card && row.j_card.toString().toUpperCase().includes('DEBIT'));
+            let nilaiCard = isCard ? (row.card || row.jum) : 0;
+
+            // 2. Akumulasikan nominal komponen kasir
+            dailySummary[tanggal].total_trx += 1;
+            dailySummary[tanggal].nominal += row.jum;
+            dailySummary[tanggal].cash += (row.cash > 0 ? (row.cash - row.kembali) : 0);
+            dailySummary[tanggal].qris_debit += row.card || 0;
+            dailySummary[tanggal].potongan += (row.hemat || 0) + (row.disc || 0);
+            dailySummary[tanggal].donasi += (row.donasi || 0);
+            
+            // Rumus potong bersih anti tekor per hari
+            dailySummary[tanggal].fix_setoran += (row.fix_setoran_server || 0);
+        });
+
+        // 3. Urutkan tanggal dari yang paling baru (Descending)
+        const sortedDates = Object.keys(dailySummary).sort((a, b) => new Date(b) - new Date(a));
+
+        // 4. Render ke HTML Dashboard
+        sortedDates.forEach(date => {
+            const r = dailySummary[date];
+            tbody.append(`
+                <tr>
+                    <td><strong>${r.tanggal}</strong></td>
+                    <td>${r.total_trx.toLocaleString()}</td>
+                    <td>${ChartsManager.formatRupiah(r.nominal)}</td>
+                    <td>${ChartsManager.formatRupiah(r.cash)}</td>
+                    <td>${ChartsManager.formatRupiah(r.qris_debit)}</td>
+                    <td>${ChartsManager.formatRupiah(r.potongan)}</td>
+                    <td class="table-success fw-bold text-primary">${ChartsManager.formatRupiah(r.fix_setoran)}</td>
+                </tr>
+            `);
+        });
+    }    
     function updateTransTable(data) {
         const formattedData = data.map(t => ({
             no_urut: t.no_urut,
