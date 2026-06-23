@@ -1,4 +1,4 @@
-// SQL Parser Module
+// SQL Parser Module - FIXED ANTI NOMBOK VERSION
 const SQLParser = (function() {
     // Parse SQL COPY format
     function parseSQLCopy(sqlText) {
@@ -85,12 +85,24 @@ const SQLParser = (function() {
                 obj.price = parseFloat(obj.price) || 0;
                 obj.qty = parseFloat(obj.qty) || 0;
             }
+            
+            // === BAGIAN PERBAIKAN UTAMA PENGURANG UTK c_tsale ===
             if (tableName === 'c_tsale') {
                 obj.jum = parseFloat(obj.jum) || 0;
                 obj.cash = parseFloat(obj.cash) || 0;
                 obj.card = parseFloat(obj.card) || 0;
                 obj.kembali = parseFloat(obj.kembali) || 0;
+                
+                // Tambahan parsing kolom pengurang dari string ke angka desimal
+                obj.disc = parseFloat(obj.disc) || 0;
+                obj.voucher = parseFloat(obj.voucher) || 0;
+                obj.donasi = parseFloat(obj.donasi) || 0;
+                obj.hemat = parseFloat(obj.hemat) || 0;
+
+                // Hitung otomatis angka bersih harian yang dicari server manajemen kantor
+                obj.fix_setoran_server = obj.jum - obj.disc - obj.card - obj.voucher - obj.donasi - obj.hemat;
             }
+            
             if (tableName === 'm_cust') {
                 obj.point = parseInt(obj.point) || 0;
             }
@@ -127,7 +139,6 @@ const SQLParser = (function() {
             const revenue = (trans.price || 0) * qty;
             const hpp = (product.m_price || 0) * qty;
             const profit = revenue - hpp;
-            const margin = revenue > 0 ? (profit / revenue) * 100 : 0;
             
             if (!productSales.has(plu)) {
                 productSales.set(plu, {
