@@ -5,30 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>AmandaMart SQL Analyzer - Financial Dashboard</title>
     
-    <!-- CSS Dependencies -->
-
-    <thead>
-    <tr>
-        <th>Tanggal</th>
-        <th>Jumlah Struk</th>
-        <th>Total Kotor (Jum)</th>
-        <th>Non-Tunai (Card)</th>
-        <th>Potongan (Hemat)</th>
-        <th>Donasi</th>
-        <th class="table-success text-primary">FIX SETORAN SERVER</th> </tr>
-</thead>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
     
-    <!-- Custom CSS -->
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
 <div class="container-fluid px-3 px-lg-4 py-3">
-    <!-- Header Section -->
     <div class="header-section animate__animated animate__fadeInDown">
         <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
             <div>
@@ -52,7 +38,6 @@
         </div>
     </div>
 
-    <!-- Navigation Tabs -->
     <ul class="nav nav-tabs modern-tabs mb-4" id="mainTab" role="tablist">
         <li class="nav-item" role="presentation">
             <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#dashboard" type="button" role="tab">
@@ -66,11 +51,8 @@
         </li>
     </ul>
 
-    <!-- Tab Content -->
     <div class="tab-content">
-        <!-- Dashboard Tab -->
         <div class="tab-pane fade show active" id="dashboard" role="tabpanel">
-            <!-- Stat Cards -->
             <div class="row g-4 mb-4">
                 <div class="col-md-3 col-6">
                     <div class="stat-card stat-card-primary animate__animated animate__fadeInUp">
@@ -118,7 +100,6 @@
                 </div>
             </div>
 
-            <!-- Charts Row -->
             <div class="row g-4 mb-4">
                 <div class="col-lg-7">
                     <div class="card chart-card animate__animated animate__fadeInLeft">
@@ -142,7 +123,6 @@
                 </div>
             </div>
 
-            <!-- Summary Table -->
             <div class="card data-table-card animate__animated animate__fadeInUp">
                 <div class="card-header bg-transparent">
                     <h5 class="mb-0"><i class="bi bi-table"></i> Ringkasan Transaksi per Tanggal</h5>
@@ -153,18 +133,20 @@
                             <thead>
                                 <tr>
                                     <th>Tanggal</th>
-                                    <th>Jumlah Transaksi</th>
-                                    <th>Total Penjualan</th>
-                                    <th>Cash</th>
-                                    <th>QRIS</th>
-                                    <th>Debit/Credit</th>
-                                    <th>Rata-Rata</th>
+                                    <th>Jumlah Struk</th>
+                                    <th>Total Kotor (Jum)</th>
+                                    <th>Tunai Bersih</th>
+                                    <th>Mesin/QRIS (Card)</th>
+                                    <th>Diskon/Hemat</th>
+                                    <th class="table-success text-primary">FIX SETORAN SERVER</th>
                                 </tr>
                             </thead>
                             <tbody id="summaryBody">
-                                <tr><td colspan="7" class="text-center text-muted">
-                                    <i class="bi bi-cloud-arrow-up"></i> Silakan upload file SQL terlebih dahulu
-                                </td></tr>
+                                <tr>
+                                    <td colspan="7" class="text-center text-muted">
+                                        <i class="bi bi-cloud-arrow-up"></i> Silakan upload file SQL terlebih dahulu
+                                    </td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -172,10 +154,8 @@
             </div>
         </div>
 
-        <!-- Laba-Rugi Tab -->
         <div class="tab-pane fade" id="profitloss" role="tabpanel">
             <div class="row g-4">
-                <!-- Profit Loss Summary Cards -->
                 <div class="col-md-4">
                     <div class="stat-card stat-card-primary">
                         <div class="stat-icon">
@@ -210,7 +190,6 @@
                     </div>
                 </div>
 
-                <!-- Profit Loss Chart -->
                 <div class="col-12">
                     <div class="card chart-card">
                         <div class="card-header bg-transparent">
@@ -222,7 +201,6 @@
                     </div>
                 </div>
 
-                <!-- Detailed Profit Loss Table -->
                 <div class="col-12">
                     <div class="card data-table-card">
                         <div class="card-header bg-transparent">
@@ -244,9 +222,11 @@
                                         </tr>
                                     </thead>
                                     <tbody id="profitLossBody">
-                                        <tr><td colspan="8" class="text-center text-muted">
-                                            <i class="bi bi-cloud-arrow-up"></i> Silakan upload file SQL terlebih dahulu
-                                        </td></tr>
+                                        <tr>
+                                            <td colspan="8" class="text-center text-muted">
+                                                <i class="bi bi-cloud-arrow-up"></i> Silakan upload file SQL terlebih dahulu
+                                            </td>
+                                        </tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -271,7 +251,6 @@
     </div>
 </div>
 
-<!-- JavaScript Dependencies -->
 <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
@@ -279,7 +258,6 @@
 <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 
-<!-- Custom JavaScript -->
 <script src="js/parser.js"></script>
 <script src="js/charts.js"></script>
 <script src="js/export.js"></script>
