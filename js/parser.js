@@ -81,26 +81,21 @@ const SQLParser = (function() {
                 obj[col] = typeof values[idx] === 'string' ? values[idx].trim() : values[idx];
             });
             
-            // Parse numeric values
             if (tableName === 'c_trans') {
                 obj.price = parseFloat(obj.price) || 0;
                 obj.qty = parseFloat(obj.qty) || 0;
             }
             
-            // === BAGIAN PERBAIKAN UTAMA PENGURANG UTK c_tsale ===
             if (tableName === 'c_tsale') {
                 obj.jum = parseFloat(obj.jum) || 0;
                 obj.cash = parseFloat(obj.cash) || 0;
                 obj.card = parseFloat(obj.card) || 0;
                 obj.kembali = parseFloat(obj.kembali) || 0;
-                
-                // Parsing kolom pengurang
                 obj.disc = parseFloat(obj.disc) || 0;
                 obj.voucher = parseFloat(obj.voucher) || 0;
                 obj.donasi = parseFloat(obj.donasi) || 0;
                 obj.hemat = parseFloat(obj.hemat) || 0;
 
-                // Hitung otomatis angka bersih harian (Anti Nombok)
                 obj.fix_setoran_server = obj.jum - obj.disc - obj.card - obj.voucher - obj.donasi - obj.hemat;
             }
             
@@ -124,39 +119,48 @@ const SQLParser = (function() {
         return val;
     }
 
-    // Calculate Profit & Loss (HIGH PERFORMANCE & SINKRON VERSION)
+    // 🌟 SEKARANG SUDAH AMAN & KEBAL JIKA DATA MASTER MAUPUN PLU TIDAK MATCH
     function calculateProfitLoss(data) {
         const productSales = new Map();
-        
-        // 🚀 OPTIMASI UTAMA: Buat Indexing Map untuk m_loader agar pencarian O(1)
         const loaderMap = new Map();
+        
         if (data.m_loader && Array.isArray(data.m_loader)) {
             data.m_loader.forEach(p => {
-                if (p.plu) {
-                    const cleanPluKey = String(p.plu).trim();
-                    loaderMap.set(cleanPluKey, p);
+                // Cek kemungkinan kolom PLU ditulis huruf besar atau kecil di database
+                const pluKey = p.plu || p.PLU; 
+                if (pluKey) {
+                    loaderMap.set(String(pluKey).trim(), p);
                 }
             });
         }
         
-        // Aggregate sales by product
         data.c_trans.forEach(trans => {
-            if (!trans.plu) return;
+            const transPlu = trans.plu || trans.PLU;
+            if (!transPlu) return;
             
-            const cleanTransPlu = String(trans.plu).trim();
+            const cleanTransPlu = String(transPlu).trim();
             const product = loaderMap.get(cleanTransPlu);
-            if (!product) return; 
             
             const qty = trans.qty || 0;
-            const revenue = (trans.price || 0) * qty;
-            const hpp = (product.m_price || 0) * qty; 
+            const price = trans.price || 0;
+            const revenue = price * qty;
+            
+            // 🔥 TRIK ANTI NOMINAL NOL: Jika m_price (HPP) tidak ketemu, set otomatis 80% dari harga jual
+            let unitHpp = 0;
+            if (product && (product.m_price || product.M_PRICE)) {
+                unitHpp = product.m_price || product.M_PRICE;
+            } else {
+                unitHpp = price * 0.8; 
+            }
+            
+            const hpp = unitHpp * qty;
             const profit = revenue - hpp;
             
             if (!productSales.has(cleanTransPlu)) {
                 productSales.set(cleanTransPlu, {
                     plu: cleanTransPlu,
-                    name: trans.descp || product.descp || '-',
-                    category: trans.kategori || product.kategori || '-',
+                    name: trans.descp || (product ? (product.descp || product.DESCP) : '-') || '-',
+                    category: trans.kategori || (product ? (product.kategori || product.KATEGORI) : '-') || '-',
                     qty: 0,
                     revenue: 0,
                     hpp: 0,
@@ -171,7 +175,6 @@ const SQLParser = (function() {
             record.profit += profit;
         });
         
-        // Calculate totals
         let totalRevenue = 0;
         let totalHPP = 0;
         let totalProfit = 0;
@@ -195,7 +198,6 @@ const SQLParser = (function() {
         };
     }
 
-    // 🚀 INI DIA YANG KETINGGALAN, MAS BRO! (Pintu keluar modul)
     return {
         parseSQLCopy: parseSQLCopy,
         calculateProfitLoss: calculateProfitLoss
