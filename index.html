@@ -52,13 +52,12 @@
     </ul>
 
     <div class="tab-content">
+        
         <div class="tab-pane fade show active" id="dashboard" role="tabpanel">
             <div class="row g-4 mb-4">
                 <div class="col-md-3 col-6">
                     <div class="stat-card stat-card-primary animate__animated animate__fadeInUp">
-                        <div class="stat-icon">
-                            <i class="bi bi-receipt"></i>
-                        </div>
+                        <div class="stat-icon"><i class="bi bi-receipt"></i></div>
                         <div class="stat-info">
                             <h3 id="statTrans">0</h3>
                             <p>Total Transaksi</p>
@@ -67,9 +66,7 @@
                 </div>
                 <div class="col-md-3 col-6">
                     <div class="stat-card stat-card-success animate__animated animate__fadeInUp" style="animation-delay: 0.1s">
-                        <div class="stat-icon">
-                            <i class="bi bi-cash-stack"></i>
-                        </div>
+                        <div class="stat-icon"><i class="bi bi-cash-stack"></i></div>
                         <div class="stat-info">
                             <h3 id="statSale">0</h3>
                             <p>Total Penjualan</p>
@@ -78,9 +75,7 @@
                 </div>
                 <div class="col-md-3 col-6">
                     <div class="stat-card stat-card-info animate__animated animate__fadeInUp" style="animation-delay: 0.2s">
-                        <div class="stat-icon">
-                            <i class="bi bi-people"></i>
-                        </div>
+                        <div class="stat-icon"><i class="bi bi-people"></i></div>
                         <div class="stat-info">
                             <h3 id="statMember">0</h3>
                             <p>Member Aktif</p>
@@ -89,9 +84,7 @@
                 </div>
                 <div class="col-md-3 col-6">
                     <div class="stat-card stat-card-warning animate__animated animate__fadeInUp" style="animation-delay: 0.3s">
-                        <div class="stat-icon">
-                            <i class="bi bi-box-seam"></i>
-                        </div>
+                        <div class="stat-icon"><i class="bi bi-box-seam"></i></div>
                         <div class="stat-info">
                             <h3 id="statProd">0</h3>
                             <p>Total Produk</p>
@@ -155,68 +148,51 @@
         </div>
 
         <div class="tab-pane fade" id="profitloss" role="tabpanel">
-            <!-- tab Laba-Rugi -->
-<div class="card chart-card animate__animated animate__fadeInUp mt-4">
-    <div class="card-header bg-transparent border-0 pt-3">
-        <h5 class="mb-0"><i class="bi bi-bar-chart-line"></i> Grafik Analisis Laba-Rugi Real-Time</h5>
-    </div>
-    <div class="card-body">
-        <!-- Kuncinya ada di ID ini: profitLossChart -->
-        <canvas id="profitLossChart"></canvas>
-    </div>
-</div>
+            <div class="row g-4 mt-2">
+                <div class="col-md-4">
+                    <div class="stat-card stat-card-primary">
+                        <div class="stat-icon"><i class="bi bi-wallet2"></i></div>
+                        <div class="stat-info">
+                            <h3 id="totalRevenue">Rp 0</h3>
+                            <p>Total Pendapatan</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="stat-card stat-card-danger">
+                        <div class="stat-icon"><i class="bi bi-cart-x"></i></div>
+                        <div class="stat-info">
+                            <h3 id="totalCost">Rp 0</h3>
+                            <p>Total HPP</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="stat-card stat-card-success">
+                        <div class="stat-icon"><i class="bi bi-piggy-bank"></i></div>
+                        <div class="stat-info">
+                            <h3 id="totalProfit" class="text-success">Rp 0</h3>
+                            <p>Laba Bersih</p>
+                        </div>
+                    </div>
+                </div>
 
+                <div class="col-12">
+                    <div class="card chart-card animate__animated animate__fadeInUp">
+                        <div class="card-header bg-transparent border-0 pt-3">
+                            <h5 class="mb-0"><i class="bi bi-bar-chart-line"></i> Grafik Analisis Laba-Rugi Real-Time</h5>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="profitLossChart"></canvas>
+                        </div>
+                    </div>
+                </div>
 
-            <!-- === BAGIAN ATAS DIHAPUS, LANGSUNG MULAI DARI SINI === -->
-<div class="row g-4">
-    <div class="col-md-4">
-        <div class="stat-card stat-card-primary">
-            <div class="stat-icon"><i class="bi bi-wallet2"></i></div>
-            <div class="stat-info">
-                <h3 id="totalRevenue">Rp 0</h3>
-                <p>Total Pendapatan</p>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-4">
-        <div class="stat-card stat-card-danger">
-            <div class="stat-icon"><i class="bi bi-cart-x"></i></div>
-            <div class="stat-info">
-                <h3 id="totalCost">Rp 0</h3>
-                <p>Total HPP</p>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-4">
-        <div class="stat-card stat-card-success">
-            <div class="stat-icon"><i class="bi bi-piggy-bank"></i></div>
-            <div class="stat-info">
-                <h3 id="totalProfit" class="text-success">Rp 0</h3>
-                <p>Laba Bersih</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- BIARKAN YANG INI SAJA YANG BERTAHAN (Wadah grafik bawaanmu sudah rapi) -->
-    <div class="col-12">
-        <div class="card chart-card">
-            <div class="card-header bg-transparent">
-                <h5 class="mb-0"><i class="bi bi-graph-up"></i> Grafik Laba-Rugi</h5>
-            </div>
-            <div class="card-body">
-                <canvas id="profitLossChart"></canvas>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-12">
-        <div class="card data-table-card">
-            <!-- ... Isi tabel produk kamu ... -->
-        </div>
-    </div>
-</div>
-<!-- =================================================== -->
-
+                <div class="col-12">
+                    <div class="card data-table-card">
+                        <div class="card-header bg-transparent">
+                            <h5 class="mb-0"><i class="bi bi-box-seam"></i> Ringkasan Laba-Rugi per Produk</h5>
+                        </div>
                         <div class="card-body p-0">
                             <div class="table-responsive">
                                 <table id="profitLossTable" class="table table-hover mb-0">
@@ -244,12 +220,8 @@
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-    </div>
-
-    <footer class="mt-5 pt-3 text-center text-muted border-top">
-        <i class="bi bi-database"></i> Andrew's  Financial Analyzer | 
+            </div> </div> </div> <footer class="mt-5 pt-3 text-center text-muted border-top">
+        <i class="bi bi-database"></i> Andrew's Financial Analyzer | 
         <i class="bi bi-graph-up"></i> Real-time Analytics | 
         <i class="bi bi-shield-check"></i> Data Security
     </footer>
@@ -260,9 +232,23 @@
             <span id="toastText"></span>
         </div>
     </div>
-</div>
 
-<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <div class="footer-credit-section mt-4 text-center">
+        <hr class="credit-divider">
+        <p class="credit-text text-muted">
+            Handcrafted with ❤️ by <strong>Andrew Dwiranto</strong> (Cah Sragen77, Indonesia) 
+            | Connect with me: 
+            <a href="https://linkedin.com/in/yudi-dwiranto-3a40a719b" target="_blank" class="social-link text-decoration-none">LinkedIn</a> • 
+            <a href="https://github.com/CahSragen77" target="_blank" class="social-link text-decoration-none">GitHub</a>
+        </p>
+        <p class="credit-ai text-muted small">
+            Built in collaboration with
+            <a href="https://google.com" target="_blank" class="gemini-link text-decoration-none fw-bold">
+                <span class="gemini-sparkle">✦</span> GEMINI AI
+            </a>
+        </p>
+    </div>
+</div> <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -273,21 +259,6 @@
 <script src="js/charts.js"></script>
 <script src="js/export.js"></script>
 <script src="js/main.js"></script>
-    <!-- AREA FOOTNOTE KARYA (Taruh di paling bawah halaman) -->
-<div class="footer-credit-section">
-  <hr class="credit-divider">
-  <p class="credit-text">
-    Handcrafted with ❤️ by <strong>Andrew Dwiranto</strong> (Cah Sragen77, Indonesia) 
-    | Connect with me: 
-    <a href="https://linkedin.com/in/yudi-dwiranto-3a40a719b" target="_blank" class="social-link">LinkedIn</a> • 
-    <a href="https://https://github.com/CahSragen77" target="_blank" class="social-link">GitHub</a>
-  </p>
-  <p class="credit-ai">
-    Built in collaboration with
-    <a href="https://google.com" target="_blank" class="gemini-link">
-      <span class="gemini-sparkle">✦</span> GEMINI AI
-    </a>
-  </p>
-</div>
+
 </body>
 </html>
