@@ -113,19 +113,20 @@ $(document).ready(function() {
             const plData = SQLParser.calculateProfitLoss(data);
             updateProfitLossUI(plData);
         }
+
+        // 🚀 SEKARANG RADAR DETEKSI FRAUD SUDAH DIKAWINKAN DI SINI (Aman & Sinkron!)
+        updateFraudUI(data);
     }
     
     function updateSummaryTable(rows) {
         const tbody = $('#summaryBody');
         tbody.empty();
         
-        // Ambil data mentah c_tsale dari globalData yang sudah lolos parser sakti kita
         if (!globalData || !globalData.c_tsale || globalData.c_tsale.length === 0) {
             tbody.html('<tr><td colspan="7" class="text-center text-muted">Tidak ada data penjualan</td></tr>');
             return;
         }
 
-        // 1. Grouping data ulang secara bersih per tanggal langsung dari database c_tsale
         const dailySummary = {};
         
         globalData.c_tsale.forEach(row => {
@@ -138,33 +139,24 @@ $(document).ready(function() {
                     total_trx: 0,
                     nominal: 0,
                     cash: 0,
-                    qris_debit: 0, // Gabungan pembayaran mesin/card
-                    potongan: 0,   // Nilai hemat / diskon member
+                    qris_debit: 0,
+                    potongan: 0,   
                     donasi: 0,
                     fix_setoran: 0
                 };
             }
             
-            // Ambil status metode pembayaran non-tunai
-            let isCard = (row.card && row.card > 0) || (row.j_card && row.j_card.toString().toUpperCase().includes('QRIS') || row.j_card && row.j_card.toString().toUpperCase().includes('DEBIT'));
-            let nilaiCard = isCard ? (row.card || row.jum) : 0;
-
-            // 2. Akumulasikan nominal komponen kasir
             dailySummary[tanggal].total_trx += 1;
             dailySummary[tanggal].nominal += row.jum;
             dailySummary[tanggal].cash += (row.cash > 0 ? (row.cash - row.kembali) : 0);
             dailySummary[tanggal].qris_debit += row.card || 0;
             dailySummary[tanggal].potongan += (row.hemat || 0) + (row.disc || 0);
             dailySummary[tanggal].donasi += (row.donasi || 0);
-            
-            // Rumus potong bersih anti tekor per hari
             dailySummary[tanggal].fix_setoran += (row.fix_setoran_server || 0);
         });
 
-        // 3. Urutkan tanggal dari yang paling baru (Descending)
         const sortedDates = Object.keys(dailySummary).sort((a, b) => new Date(b) - new Date(a));
 
-        // 4. Render ke HTML Dashboard
         sortedDates.forEach(date => {
             const r = dailySummary[date];
             tbody.append(`
@@ -180,6 +172,7 @@ $(document).ready(function() {
             `);
         });
     }    
+
     function updateTransTable(data) {
         const formattedData = data.map(t => ({
             no_urut: t.no_urut,
@@ -273,19 +266,16 @@ $(document).ready(function() {
     }
     
     function updateProfitLossUI(plData) {
-        // Update summary cards
         $('#totalRevenue').text(ChartsManager.formatRupiah(plData.totalRevenue));
         $('#totalCost').text(ChartsManager.formatRupiah(plData.totalHPP));
         $('#totalProfit').text(ChartsManager.formatRupiah(plData.totalProfit));
         
-        // Update profit loss chart
         ChartsManager.updateProfitLossChart(
             plData.totalRevenue,
             plData.totalHPP,
             plData.totalProfit
         );
         
-        // Update profit loss table
         const formattedData = plData.products.map(p => ({
             plu: p.plu,
             name: p.name,
@@ -300,6 +290,44 @@ $(document).ready(function() {
         profitLossTable.clear();
         profitLossTable.rows.add(formattedData);
         profitLossTable.draw();
+    }
+
+    // 🚀 FUNGSI BARU: Mengatur render tabel Fraud secara terstruktur
+    function updateFraudUI(parsedData) {
+        const tbody = document.getElementById('fraudTableBody');
+        const totalBadge = document.getElementById('totalAnomali');
+        
+        // Proteksi jika GuardManager belum dimuat di HTML
+        if (typeof GuardManager === 'undefined') {
+            if(tbody) tbody.innerHTML = `<tr><td colspan="4" class="text-center text-warning">Kritikal: GuardManager.js belum dimuat di index.html</td></tr>`;
+            return;
+        }
+
+        const temuanFraud = GuardManager.analyzeFraud(parsedData);
+
+        if (!tbody || !totalBadge) return; // Mencegah eror jika element HTML tidak ada
+
+        if (temuanFraud.length === 0) {
+            totalBadge.className = "badge bg-success";
+            totalBadge.innerText = "Aman Bersih";
+            tbody.innerHTML = `<tr><td colspan="4" class="text-center text-success fw-bold py-4">✅ Hebat! Tidak ditemukan indikasi kecurangan pada data hari ini.</td></tr>`;
+        } else {
+            totalBadge.className = "badge bg-danger";
+            totalBadge.innerText = `${temuanFraud.length} Temuan`;
+            
+            let htmlRows = '';
+            temuanFraud.forEach(item => {
+                htmlRows += `
+                    <tr>
+                        <td class="fw-bold text-secondary">#${item.nota || '-'}</td>
+                        <td><span class="badge ${item.badgeColor || 'bg-warning'}">${item.tipe}</span></td>
+                        <td class="text-muted">${item.keterangan}</td>
+                        <td class="text-center"><span class="text-dark fw-bold">${item.level}</span></td>
+                    </tr>
+                `;
+            });
+            tbody.innerHTML = htmlRows;
+        }
     }
     
     function showToast(msg, type) {
@@ -393,41 +421,4 @@ $(document).ready(function() {
             { data: "margin", title: "Margin" }
         ];
     }
-
-    // Di dalam fungsi trigger upload SQL milikmu:
-const parsedData = SQLParser.parseSQLCopy(rawSqlText);
-
-// 1. Biarkan chart & summary berjalan seperti biasa
-ChartsManager.generateSummaryAndCharts(parsedData.c_tsale);
-
-// 2. Jalankan radar deteksi fraud
-const temuanFraud = GuardManager.analyzeFraud(parsedData);
-
-// 3. Render hasilnya ke tabel HTML
-const tbody = document.getElementById('fraudTableBody');
-const totalBadge = document.getElementById('totalAnomali');
-
-if (temuanFraud.length === 0) {
-    totalBadge.className = "badge bg-success";
-    totalBadge.innerText = "Aman Bersih";
-    tbody.innerHTML = `<tr><td colspan="4" class="text-center text-success fw-bold py-4">✅ Hebat! Tidak ditemukan indikasi kecurangan pada data hari ini.</td></tr>`;
-} else {
-    totalBadge.className = "badge bg-danger";
-    totalBadge.innerText = `${temuanFraud.length} Temuan`;
-    
-    let htmlRows = '';
-    document.getElementById('totalAnomali').innerText = `${temuanFraud.length} Indikasi`;
-    
-    temuanFraud.forEach(item => {
-        htmlRows += `
-            <tr>
-                <td class="fw-bold text-secondary">#${item.nota}</td>
-                <td><span class="badge ${item.badgeColor}">${item.tipe}</span></td>
-                <td class="text-muted">${item.keterangan}</td>
-                <td class="text-center"><span class="text-dark fw-bold">${item.level}</span></td>
-            </tr>
-        `;
-    });
-    tbody.innerHTML = htmlRows;
-}
 });
