@@ -290,52 +290,5 @@
     </a>
   </p>
 </div>
-
-    <script>
-  // Ambil wadah kanvas yang sudah kita buat di atas
-  const ctx = document.getElementById('grafikKerenSaku').getContext('2d');
-
-  // Gambar grafiknya menggunakan Chart.js
-  new Chart(ctx, {
-    type: 'bar', // Jenis grafik: 'bar' (batang), bisa diganti 'line' (garis) atau 'pie' (lingkaran)
-    data: {
-      labels: ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni'], // Sumbu X (Waktu)
-      datasets: [{
-        label: 'Keuntungan Bersih (dalam Jutaan Rupiah)',
-        data:, // Sumbu Y (Data Angka Penjualan)
-        backgroundColor: [
-          'rgba(54, 162, 235, 0.7)',  // Biru
-          'rgba(75, 192, 192, 0.7)',  // Hijau Toska
-          'rgba(255, 206, 86, 0.7)',  // Kuning
-          'rgba(255, 99, 132, 0.7)',  // Merah Muda
-          'rgba(153, 102, 255, 0.7)', // Ungu
-          'rgba(255, 159, 64, 0.7)'   // Oranye
-        ],
-        borderColor: 'rgba(54, 162, 235, 1)',
-        borderWidth: 1
-      }]
-    },
-    options: {
-      responsive: true,
-      animations: {
-        tension: {
-          duration: 1000,
-          easing: 'linear',
-          from: 1,
-          to: 0,
-          loop: true
-        }
-      },
-      plugins: {
-        legend: {
-          display: true,
-          position: 'top'
-        }
-      }
-    }
-  });
-</script>
-
-
 </body>
 </html>
