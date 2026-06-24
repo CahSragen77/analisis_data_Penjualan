@@ -445,3 +445,67 @@ footer {
 footer i {
     margin: 0 5px;
 }
+
+/* Styling khusus area credit footnote bawah */
+.footer-credit-section {
+  text-align: center;
+  padding: 20px 10px 30px 10px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #ffffff; /* Tetap bersih menyatu dengan dashboard */
+}
+
+/* Garis pembatas tipis yang elegan */
+.credit-divider {
+  border: 0;
+  height: 1px;
+  background: linear-gradient(to right, rgba(0,0,0,0), rgba(0,0,0,0.1), rgba(0,0,0,0));
+  margin-bottom: 15px;
+}
+
+/* Teks identitas diri */
+.credit-text {
+  font-size: 13px;
+  color: #666666;
+  margin: 5px 0;
+}
+
+/* Link sosial media saat diarahkan kursor */
+.social-link {
+  color: #0066cc;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+.social-link:hover {
+  color: #003366;
+  text-decoration: underline;
+}
+
+/* Teks khusus partner AI Gemini */
+.credit-ai {
+  font-size: 12px;
+  color: #888888;
+  margin-top: 8px;
+}
+
+/* Efek warna text gradasi khusus merk GEMINI AI */
+.gemini-link {
+  font-weight: bold;
+  text-decoration: none;
+  background: linear-gradient(45deg, #4796E3, #9177C7, #CA6673); /* Warna official Gemini */
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: inline-block;
+}
+
+/* Animasi kilauan simbol bintang Gemini */
+.gemini-sparkle {
+  animation: pulse 2s infinite;
+  display: inline-block;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); opacity: 0.8; }
+  50% { transform: scale(1.2); opacity: 1; }
+  100% { transform: scale(1); opacity: 0.8; }
+}
+
