@@ -78,7 +78,6 @@ const SQLParser = (function() {
             
             let obj = {};
             columns.forEach((col, idx) => {
-                // Ditambahkan .trim() untuk membersihkan spasi liar dari dump SQL
                 obj[col] = typeof values[idx] === 'string' ? values[idx].trim() : values[idx];
             });
             
@@ -133,7 +132,6 @@ const SQLParser = (function() {
         const loaderMap = new Map();
         if (data.m_loader && Array.isArray(data.m_loader)) {
             data.m_loader.forEach(p => {
-                // FORCE: Pastikan key PLU di Map disimpan dalam format String bersih
                 if (p.plu) {
                     const cleanPluKey = String(p.plu).trim();
                     loaderMap.set(cleanPluKey, p);
@@ -145,16 +143,13 @@ const SQLParser = (function() {
         data.c_trans.forEach(trans => {
             if (!trans.plu) return;
             
-            // FORCE: Pastikan PLU transaksi dicari dalam format String bersih juga
             const cleanTransPlu = String(trans.plu).trim();
-            
-            // Mengambil master produk langsung dari Map (Pasti sinkron!)
             const product = loaderMap.get(cleanTransPlu);
-            if (!product) return; // Jika tidak sinkron, baris ini akan melewatinya (HPP jadi 0)
+            if (!product) return; 
             
             const qty = trans.qty || 0;
             const revenue = (trans.price || 0) * qty;
-            const hpp = (product.m_price || 0) * qty; // Mengambil harga modal m_price
+            const hpp = (product.m_price || 0) * qty; 
             const profit = revenue - hpp;
             
             if (!productSales.has(cleanTransPlu)) {
@@ -199,4 +194,11 @@ const SQLParser = (function() {
             totalProfit: totalProfit
         };
     }
-    })();
+
+    // 🚀 INI DIA YANG KETINGGALAN, MAS BRO! (Pintu keluar modul)
+    return {
+        parseSQLCopy: parseSQLCopy,
+        calculateProfitLoss: calculateProfitLoss
+    };
+
+})();
