@@ -125,7 +125,7 @@ const SQLParser = (function() {
         return val;
     }
 
-    // Calculate Profit & Loss (HIGH PERFORMANCE VERSION)
+    // Calculate Profit & Loss (HIGH PERFORMANCE & SINKRON VERSION)
     function calculateProfitLoss(data) {
         const productSales = new Map();
         
@@ -133,27 +133,33 @@ const SQLParser = (function() {
         const loaderMap = new Map();
         if (data.m_loader && Array.isArray(data.m_loader)) {
             data.m_loader.forEach(p => {
-                if (p.plu) loaderMap.set(p.plu, p);
+                // FORCE: Pastikan key PLU di Map disimpan dalam format String bersih
+                if (p.plu) {
+                    const cleanPluKey = String(p.plu).trim();
+                    loaderMap.set(cleanPluKey, p);
+                }
             });
         }
         
         // Aggregate sales by product
         data.c_trans.forEach(trans => {
-            const plu = trans.plu;
-            if (!plu) return;
+            if (!trans.plu) return;
             
-            // Mengambil master produk langsung dari Map (Instan, anti-lemot)
-            const product = loaderMap.get(plu);
-            if (!product) return;
+            // FORCE: Pastikan PLU transaksi dicari dalam format String bersih juga
+            const cleanTransPlu = String(trans.plu).trim();
+            
+            // Mengambil master produk langsung dari Map (Pasti sinkron!)
+            const product = loaderMap.get(cleanTransPlu);
+            if (!product) return; // Jika tidak sinkron, baris ini akan melewatinya (HPP jadi 0)
             
             const qty = trans.qty || 0;
             const revenue = (trans.price || 0) * qty;
-            const hpp = (product.m_price || 0) * qty;
+            const hpp = (product.m_price || 0) * qty; // Mengambil harga modal m_price
             const profit = revenue - hpp;
             
-            if (!productSales.has(plu)) {
-                productSales.set(plu, {
-                    plu: plu,
+            if (!productSales.has(cleanTransPlu)) {
+                productSales.set(cleanTransPlu, {
+                    plu: cleanTransPlu,
                     name: trans.descp || product.descp || '-',
                     category: trans.kategori || product.kategori || '-',
                     qty: 0,
@@ -163,7 +169,7 @@ const SQLParser = (function() {
                 });
             }
             
-            const record = productSales.get(plu);
+            const record = productSales.get(cleanTransPlu);
             record.qty += qty;
             record.revenue += revenue;
             record.hpp += hpp;
@@ -194,8 +200,4 @@ const SQLParser = (function() {
         };
     }
 
-    return {
-        parseSQLCopy: parseSQLCopy,
-        calculateProfitLoss: calculateProfitLoss
-    };
 })();
