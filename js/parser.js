@@ -119,14 +119,12 @@ const SQLParser = (function() {
         return val;
     }
 
-    // 🌟 SEKARANG SUDAH AMAN & KEBAL JIKA DATA MASTER MAUPUN PLU TIDAK MATCH
     function calculateProfitLoss(data) {
         const productSales = new Map();
         const loaderMap = new Map();
         
         if (data.m_loader && Array.isArray(data.m_loader)) {
             data.m_loader.forEach(p => {
-                // Cek kemungkinan kolom PLU ditulis huruf besar atau kecil di database
                 const pluKey = p.plu || p.PLU; 
                 if (pluKey) {
                     loaderMap.set(String(pluKey).trim(), p);
@@ -145,12 +143,21 @@ const SQLParser = (function() {
             const price = trans.price || 0;
             const revenue = price * qty;
             
-            // 🔥 TRIK ANTI NOMINAL NOL: Jika m_price (HPP) tidak ketemu, set otomatis 80% dari harga jual
+            // 🚀 STRATEGI ANTI ANGKA NOL:
+            // Kita cek m_price di m_loader ATAU avg_cost di c_trans. 
+            // Jika dua-duanya bernilai 0, kita paksa pakai estimasi modal 75% dari harga jual!
             let unitHpp = 0;
-            if (product && (product.m_price || product.M_PRICE)) {
-                unitHpp = product.m_price || product.M_PRICE;
+            
+            const masterHpp = product ? (product.m_price || product.M_PRICE || 0) : 0;
+            const transHpp = trans.avg_cost || trans.AVG_COST || 0;
+            
+            if (masterHpp > 0) {
+                unitHpp = masterHpp;
+            } else if (transHpp > 0) {
+                unitHpp = transHpp;
             } else {
-                unitHpp = price * 0.8; 
+                // Jika server ngasih angka 0, kita buat asumsi modal toko sebesar 75% dari harga jual
+                unitHpp = price * 0.75; 
             }
             
             const hpp = unitHpp * qty;
