@@ -393,4 +393,41 @@ $(document).ready(function() {
             { data: "margin", title: "Margin" }
         ];
     }
+
+    // Di dalam fungsi trigger upload SQL milikmu:
+const parsedData = SQLParser.parseSQLCopy(rawSqlText);
+
+// 1. Biarkan chart & summary berjalan seperti biasa
+ChartsManager.generateSummaryAndCharts(parsedData.c_tsale);
+
+// 2. Jalankan radar deteksi fraud
+const temuanFraud = GuardManager.analyzeFraud(parsedData);
+
+// 3. Render hasilnya ke tabel HTML
+const tbody = document.getElementById('fraudTableBody');
+const totalBadge = document.getElementById('totalAnomali');
+
+if (temuanFraud.length === 0) {
+    totalBadge.className = "badge bg-success";
+    totalBadge.innerText = "Aman Bersih";
+    tbody.innerHTML = `<tr><td colspan="4" class="text-center text-success fw-bold py-4">✅ Hebat! Tidak ditemukan indikasi kecurangan pada data hari ini.</td></tr>`;
+} else {
+    totalBadge.className = "badge bg-danger";
+    totalBadge.innerText = `${temuanFraud.length} Temuan`;
+    
+    let htmlRows = '';
+    document.getElementById('totalAnomali').innerText = `${temuanFraud.length} Indikasi`;
+    
+    temuanFraud.forEach(item => {
+        htmlRows += `
+            <tr>
+                <td class="fw-bold text-secondary">#${item.nota}</td>
+                <td><span class="badge ${item.badgeColor}">${item.tipe}</span></td>
+                <td class="text-muted">${item.keterangan}</td>
+                <td class="text-center"><span class="text-dark fw-bold">${item.level}</span></td>
+            </tr>
+        `;
+    });
+    tbody.innerHTML = htmlRows;
+}
 });
