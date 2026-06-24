@@ -198,6 +198,4 @@ const SQLParser = (function() {
             totalHPP: totalHPP,
             totalProfit: totalProfit
         };
-    }
-
-})();
+    })();
