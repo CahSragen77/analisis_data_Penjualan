@@ -167,57 +167,56 @@
 </div>
 
 
-            <div class="row g-4">
-                <div class="col-md-4">
-                    <div class="stat-card stat-card-primary">
-                        <div class="stat-icon">
-                            <i class="bi bi-wallet2"></i>
-                        </div>
-                        <div class="stat-info">
-                            <h3 id="totalRevenue">Rp 0</h3>
-                            <p>Total Pendapatan</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="stat-card stat-card-danger">
-                        <div class="stat-icon">
-                            <i class="bi bi-cart-x"></i>
-                        </div>
-                        <div class="stat-info">
-                            <h3 id="totalCost">Rp 0</h3>
-                            <p>Total HPP</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="stat-card stat-card-success">
-                        <div class="stat-icon">
-                            <i class="bi bi-piggy-bank"></i>
-                        </div>
-                        <div class="stat-info">
-                            <h3 id="totalProfit" class="text-success">Rp 0</h3>
-                            <p>Laba Bersih</p>
-                        </div>
-                    </div>
-                </div>
+            <!-- === BAGIAN ATAS DIHAPUS, LANGSUNG MULAI DARI SINI === -->
+<div class="row g-4">
+    <div class="col-md-4">
+        <div class="stat-card stat-card-primary">
+            <div class="stat-icon"><i class="bi bi-wallet2"></i></div>
+            <div class="stat-info">
+                <h3 id="totalRevenue">Rp 0</h3>
+                <p>Total Pendapatan</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="stat-card stat-card-danger">
+            <div class="stat-icon"><i class="bi bi-cart-x"></i></div>
+            <div class="stat-info">
+                <h3 id="totalCost">Rp 0</h3>
+                <p>Total HPP</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="stat-card stat-card-success">
+            <div class="stat-icon"><i class="bi bi-piggy-bank"></i></div>
+            <div class="stat-info">
+                <h3 id="totalProfit" class="text-success">Rp 0</h3>
+                <p>Laba Bersih</p>
+            </div>
+        </div>
+    </div>
 
-                <div class="col-12">
-                    <div class="card chart-card">
-                        <div class="card-header bg-transparent">
-                            <h5 class="mb-0"><i class="bi bi-graph-up"></i> Grafik Laba-Rugi</h5>
-                        </div>
-                        <div class="card-body">
-                            <canvas id="profitLossChart"></canvas>
-                        </div>
-                    </div>
-                </div>
+    <!-- BIARKAN YANG INI SAJA YANG BERTAHAN (Wadah grafik bawaanmu sudah rapi) -->
+    <div class="col-12">
+        <div class="card chart-card">
+            <div class="card-header bg-transparent">
+                <h5 class="mb-0"><i class="bi bi-graph-up"></i> Grafik Laba-Rugi</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="profitLossChart"></canvas>
+            </div>
+        </div>
+    </div>
 
-                <div class="col-12">
-                    <div class="card data-table-card">
-                        <div class="card-header bg-transparent">
-                            <h5 class="mb-0"><i class="bi bi-calculator"></i> Detail Laba-Rugi per Produk</h5>
-                        </div>
+    <div class="col-12">
+        <div class="card data-table-card">
+            <!-- ... Isi tabel produk kamu ... -->
+        </div>
+    </div>
+</div>
+<!-- =================================================== -->
+
                         <div class="card-body p-0">
                             <div class="table-responsive">
                                 <table id="profitLossTable" class="table table-hover mb-0">
