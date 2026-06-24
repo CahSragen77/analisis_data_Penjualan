@@ -4,6 +4,18 @@ const ChartsManager = (function() {
     let paymentChart = null;
     let profitLossChart = null;
     
+    // Fungsi pembantu ditempatkan di atas agar aman saat dipanggil oleh chart tooltip
+    function formatRupiah(val) {
+        if (val === undefined || val === null) return 'Rp 0';
+        let num = parseFloat(val);
+        if (isNaN(num)) return val;
+        return new Intl.NumberFormat('id-ID', {
+            style: 'currency',
+            currency: 'IDR',
+            minimumFractionDigits: 0
+        }).format(num);
+    }
+    
     // Generate summary from sales data
     function generateSummaryAndCharts(salesData) {
         const groupMap = new Map();
@@ -19,7 +31,7 @@ const ChartsManager = (function() {
             
             const rec = groupMap.get(tgl);
             rec.count++;
-            const nominal = sale.jum || 0;
+            const nominal = parseFloat(sale.jum) || 0; // Memastikan data berupa angka numeric
             rec.total += nominal;
             
             // Payment method detection
@@ -29,15 +41,21 @@ const ChartsManager = (function() {
                 if (jcardUpper.includes('QRIS')) metode = 'qris';
                 else if (jcardUpper.includes('DEBIT') || jcardUpper.includes('CREDIT')) metode = 'debit';
             }
-            if (metode === 'cash' && sale.card && sale.card > 0) metode = 'debit';
+            if (metode === 'cash' && sale.card && parseFloat(sale.card) > 0) {
+                metode = 'debit';
+            }
             
-            if (metode === 'cash') rec.cash += nominal;
-            else if (metode === 'qris') rec.qris += nominal;
-            else rec.debit += nominal;
-            
-            if (metode === 'cash') totalCashAll += nominal;
-            else if (metode === 'qris') totalQrisAll += nominal;
-            else totalDebitAll += nominal;
+            // Pengelompokan data dioptimalkan dalam satu blok logika
+            if (metode === 'cash') {
+                rec.cash += nominal;
+                totalCashAll += nominal;
+            } else if (metode === 'qris') {
+                rec.qris += nominal;
+                totalQrisAll += nominal;
+            } else {
+                rec.debit += nominal;
+                totalDebitAll += nominal;
+            }
         });
         
         const sortedDates = Array.from(groupMap.keys()).sort();
@@ -55,11 +73,11 @@ const ChartsManager = (function() {
                 cash: d.cash,
                 qris: d.qris,
                 debit: d.debit,
-                avg: d.total / d.count
+                avg: d.count > 0 ? (d.total / d.count) : 0 // Proteksi error pembagian dengan angka 0
             });
         }
         
-        // Update charts
+        // Update charts bawaan dashboard secara otomatis
         updateTransChart(labels, countData);
         updatePaymentChart(totalCashAll, totalQrisAll, totalDebitAll);
         
@@ -93,15 +111,12 @@ const ChartsManager = (function() {
             },
             options: {
                 responsive: true,
-                maintainAspectRatio: true,
+                maintainAspectRatio: false, // Diubah ke false agar lebih pas di grid Bootstrap
                 plugins: {
                     legend: {
                         position: 'top',
                         labels: {
-                            font: {
-                                size: 12,
-                                weight: 'bold'
-                            }
+                            font: { size: 12, weight: 'bold' }
                         }
                     },
                     tooltip: {
@@ -115,14 +130,10 @@ const ChartsManager = (function() {
                 scales: {
                     y: {
                         beginAtZero: true,
-                        grid: {
-                            color: 'rgba(0,0,0,0.05)'
-                        }
+                        grid: { color: 'rgba(0,0,0,0.05)' }
                     },
                     x: {
-                        grid: {
-                            display: false
-                        }
+                        grid: { display: false }
                     }
                 }
             }
@@ -148,14 +159,12 @@ const ChartsManager = (function() {
             },
             options: {
                 responsive: true,
-                maintainAspectRatio: true,
+                maintainAspectRatio: false,
                 plugins: {
                     legend: {
                         position: 'bottom',
                         labels: {
-                            font: {
-                                size: 12
-                            },
+                            font: { size: 12 },
                             padding: 15
                         }
                     },
@@ -165,8 +174,8 @@ const ChartsManager = (function() {
                                 const label = context.label || '';
                                 const value = context.raw || 0;
                                 const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                                const percentage = ((value / total) * 100).toFixed(1);
-                                return `${label}: ${formatRupiah(value)} (${percentage}%)`;
+                                const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+                                return ` ${label}: ${formatRupiah(value)} (${percentage}%)`;
                             }
                         }
                     }
@@ -195,15 +204,13 @@ const ChartsManager = (function() {
             },
             options: {
                 responsive: true,
-                maintainAspectRatio: true,
+                maintainAspectRatio: false,
                 plugins: {
-                    legend: {
-                        display: false
-                    },
+                    legend: { display: false },
                     tooltip: {
                         callbacks: {
                             label: (context) => {
-                                return `Rp ${context.raw.toLocaleString('id-ID')}`;
+                                return ` ${formatRupiah(context.raw)}`;
                             }
                         }
                     }
@@ -222,17 +229,7 @@ const ChartsManager = (function() {
         });
     }
     
-    function formatRupiah(val) {
-        if (val === undefined || val === null) return '0';
-        let num = parseFloat(val);
-        if (isNaN(num)) return val;
-        return new Intl.NumberFormat('id-ID', {
-            style: 'currency',
-            currency: 'IDR',
-            minimumFractionDigits: 0
-        }).format(num);
-    }
-    
+    // Ekspos fungsi ke global scope agar bisa diakses oleh main.js
     return {
         generateSummaryAndCharts: generateSummaryAndCharts,
         updateProfitLossChart: updateProfitLossChart,
