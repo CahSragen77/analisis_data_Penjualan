@@ -1,5 +1,6 @@
-// SQL Parser Module - FIXED ANTI NOMBOK VERSION
+// SQL Parser Module - FIXED ANTI NOMBOK VERSION (OPTIMIZED)
 const SQLParser = (function() {
+    
     // Parse SQL COPY format
     function parseSQLCopy(sqlText) {
         const result = {
@@ -77,7 +78,8 @@ const SQLParser = (function() {
             
             let obj = {};
             columns.forEach((col, idx) => {
-                obj[col] = values[idx];
+                // Ditambahkan .trim() untuk membersihkan spasi liar dari dump SQL
+                obj[col] = typeof values[idx] === 'string' ? values[idx].trim() : values[idx];
             });
             
             // Parse numeric values
@@ -93,13 +95,13 @@ const SQLParser = (function() {
                 obj.card = parseFloat(obj.card) || 0;
                 obj.kembali = parseFloat(obj.kembali) || 0;
                 
-                // Tambahan parsing kolom pengurang dari string ke angka desimal
+                // Parsing kolom pengurang
                 obj.disc = parseFloat(obj.disc) || 0;
                 obj.voucher = parseFloat(obj.voucher) || 0;
                 obj.donasi = parseFloat(obj.donasi) || 0;
                 obj.hemat = parseFloat(obj.hemat) || 0;
 
-                // Hitung otomatis angka bersih harian yang dicari server manajemen kantor
+                // Hitung otomatis angka bersih harian (Anti Nombok)
                 obj.fix_setoran_server = obj.jum - obj.disc - obj.card - obj.voucher - obj.donasi - obj.hemat;
             }
             
@@ -123,16 +125,25 @@ const SQLParser = (function() {
         return val;
     }
 
-    // Calculate Profit & Loss
+    // Calculate Profit & Loss (HIGH PERFORMANCE VERSION)
     function calculateProfitLoss(data) {
         const productSales = new Map();
+        
+        // 🚀 OPTIMASI UTAMA: Buat Indexing Map untuk m_loader agar pencarian O(1)
+        const loaderMap = new Map();
+        if (data.m_loader && Array.isArray(data.m_loader)) {
+            data.m_loader.forEach(p => {
+                if (p.plu) loaderMap.set(p.plu, p);
+            });
+        }
         
         // Aggregate sales by product
         data.c_trans.forEach(trans => {
             const plu = trans.plu;
             if (!plu) return;
             
-            const product = data.m_loader.find(p => p.plu === plu);
+            // Mengambil master produk langsung dari Map (Instan, anti-lemot)
+            const product = loaderMap.get(plu);
             if (!product) return;
             
             const qty = trans.qty || 0;
@@ -171,7 +182,7 @@ const SQLParser = (function() {
             
             return {
                 ...item,
-                margin: item.revenue > 0 ? ((item.profit / item.revenue) * 100).toFixed(2) : 0
+                margin: item.revenue > 0 ? ((item.profit / item.revenue) * 100).toFixed(2) : "0.00"
             };
         });
         
