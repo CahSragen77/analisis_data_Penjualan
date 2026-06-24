@@ -155,14 +155,17 @@
         </div>
 
         <div class="tab-pane fade" id="profitloss" role="tabpanel">
-            <!-- 1. Panggil otak Chart.js dari internet -->
-                <script src="https://jsdelivr.net"></script>
+            <!-- tab Laba-Rugi -->
+<div class="card chart-card animate__animated animate__fadeInUp mt-4">
+    <div class="card-header bg-transparent border-0 pt-3">
+        <h5 class="mb-0"><i class="bi bi-bar-chart-line"></i> Grafik Analisis Laba-Rugi Real-Time</h5>
+    </div>
+    <div class="card-body">
+        <!-- Kuncinya ada di ID ini: profitLossChart -->
+        <canvas id="profitLossChart"></canvas>
+    </div>
+</div>
 
-                    <!-- 2. Siapkan wadah (kanvas) untuk menggambar grafiknya -->
-                        <div class="kotak-grafik-interaktif">
-                          <h3>Tren Keuntungan Penjualan 2026</h3>
-                        <canvas id="grafikKerenSaku"></canvas>
-                    </div>
 
             <div class="row g-4">
                 <div class="col-md-4">
