@@ -509,3 +509,16 @@ footer i {
   100% { transform: scale(1); opacity: 0.8; }
 }
 
+/* Mengatur ukuran kotak pembungkus grafik agar proporsional */
+.kotak-grafik-interaktif {
+  max-width: 600px;  /* Lebar maksimal grafik */
+  margin: 30px auto; /* Membuat posisi kotak pas di tengah halaman */
+  padding: 20px;
+  background-color: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Efek bayangan halus */
+  font-family: sans-serif;
+  text-align: center;
+}
+
+
