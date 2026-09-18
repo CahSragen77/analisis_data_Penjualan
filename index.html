@@ -23,7 +23,8 @@
     <script src="js/export.js" defer></script>
     <script src="js/main.js" defer></script>
     <script src="js/GuardManager.js" defer></script>
-    <script src="js/login.js" defer></script>
+    <script src="js/paslog.js" defer></script>
+    <script src="js/import.js" defer></script>
 </head>
 <body>
 
@@ -59,14 +60,18 @@
                         <strong>Analisis keuangan otomatis & real-time</strong>
                     </p>
                 </div>
+                
+                <!-- HANYA ADASATU BUTTON GROUP DI SINI -->
                 <div class="button-group d-flex align-items-center gap-2">
                     <button id="btnLoginNav" onclick="openLoginModal()" class="btn btn-outline-primary btn-modern px-3 py-2">
                         🔑 Login
                     </button>
-                    <label for="sqlUpload" class="btn btn-primary btn-modern px-4 py-2 mb-0">
+                    <!-- Tombol Upload tersembunyi secara default -->
+                    <label id="btnUploadSql" for="sqlUpload" class="btn btn-primary btn-modern px-4 py-2 mb-0" style="display: none;">
                         <i class="bi bi-upload"></i> Upload SQL
                     </label>
                     <input type="file" id="sqlUpload" accept=".sql,.txt" style="display:none">
+                    
                     <button id="exportAllBtn" class="btn btn-excel btn-modern px-4 py-2" disabled>
                         <i class="bi bi-file-spreadsheet"></i> Ekspor Excel
                     </button>
@@ -290,9 +295,9 @@
                             </div>
                         </div>
                     </div>
-                </div> <!-- End row g-4 mt-2 -->
-            </div> <!-- End Tab Laba-Rugi -->
-        </div> <!-- End Tab Content -->
+                </div>
+            </div>
+        </div>
 
         <!-- FOOTER SECTION -->
         <footer class="mt-5 pt-3 text-center text-muted border-top">
@@ -319,7 +324,7 @@
                 </a>
             </p>
         </div>
-    </div> <!-- END MAIN CONTAINER -->
+    </div>
 
     <!-- TOAST MESSAGE -->
     <div id="toastMsg" class="info-toast" style="display: none;">
