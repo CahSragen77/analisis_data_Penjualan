@@ -12,280 +12,316 @@
     
     <link rel="stylesheet" href="css/style.css">
     <script src="https://code.jquery.com/jquery-3.7.0.min.js" defer></script>
-<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js" defer></script>
-<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js" defer></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js" defer></script>
-<script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js" defer></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" defer></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js" defer></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js" defer></script>
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" defer></script>
 
-<script src="js/parser.js" defer></script>
-<script src="js/charts.js" defer></script>
-<script src="js/export.js" defer></script>
-<script src="js/main.js" defer></script>
-<script src="js/GuardManager.js" defer></script>
-<script src="js/login.js" defer></script>
-
+    <script src="js/parser.js" defer></script>
+    <script src="js/charts.js" defer></script>
+    <script src="js/export.js" defer></script>
+    <script src="js/main.js" defer></script>
+    <script src="js/GuardManager.js" defer></script>
+    <script src="js/login.js" defer></script>
 </head>
 <body>
+
     <!-- MODAL LOGIN POP-UP -->
-<div id="loginModal" style="display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); align-items: center; justify-content: center;">
-    <div style="background-color: #fff; padding: 25px; border-radius: 12px; width: 320px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); text-align: center;">
-        <h3 style="margin-top: 0; margin-bottom: 15px; color: #333;">Akses Terkunci</h3>
-        <p style="font-size: 13px; color: #666; margin-bottom: 20px;">Silakan login untuk membuka dashboard</p>
-        
-        <input type="text" id="usernameInput" placeholder="Username" style="width: 100%; padding: 10px; margin-bottom: 12px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box;">
-        <input type="password" id="passwordInput" placeholder="Password" style="width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box;">
-        
-        <p id="loginError" style="color: red; font-size: 12px; display: none; margin-bottom: 10px;">Username atau Password salah!</p>
-        
-        <div style="display: flex; gap: 10px;">
-            <button onclick="closeLoginModal()" style="flex: 1; padding: 10px; background-color: #6c757d; color: white; border: none; border-radius: 6px; cursor: pointer;">Batal</button>
-            <button onclick="processLogin()" style="flex: 1; padding: 10px; background-color: #198754; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">Masuk</button>
+    <div id="loginModal" style="display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); align-items: center; justify-content: center;">
+        <div style="background-color: #fff; padding: 25px; border-radius: 12px; width: 320px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); text-align: center;">
+            <h3 style="margin-top: 0; margin-bottom: 15px; color: #333;">Akses Terkunci</h3>
+            <p style="font-size: 13px; color: #666; margin-bottom: 20px;">Silakan login untuk membuka dashboard</p>
+            
+            <input type="text" id="usernameInput" placeholder="Username" style="width: 100%; padding: 10px; margin-bottom: 12px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box;">
+            <input type="password" id="passwordInput" placeholder="Password" style="width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box;">
+            
+            <p id="loginError" style="color: red; font-size: 12px; display: none; margin-bottom: 10px;">Username atau Password salah!</p>
+            
+            <div style="display: flex; gap: 10px;">
+                <button onclick="closeLoginModal()" style="flex: 1; padding: 10px; background-color: #6c757d; color: white; border: none; border-radius: 6px; cursor: pointer;">Batal</button>
+                <button onclick="processLogin()" style="flex: 1; padding: 10px; background-color: #198754; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">Masuk</button>
+            </div>
         </div>
     </div>
-</div>
 
-<div class="container-fluid px-3 px-lg-4 py-3">
-    <div class="header-section animate__animated animate__fadeInDown">
-        <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
-            <div>
-                <h1 class="fw-bold mb-0 gradient-text">
-                    <i class="bi bi-database-gear"></i> Andrew's Data Analyzer
-                </h1>
-                <p class="text-muted mt-2">
-                    <i class="bi bi-cloud-upload"></i> Upload file <code>.sql</code> (dump PostgreSQL) — 
-                    <strong>Analisis keuangan otomatis & real-time</strong>
-                </p>
+    <!-- MAIN CONTAINER -->
+    <div class="container-fluid px-3 px-lg-4 py-3">
+        <!-- HEADER SECTION -->
+        <div class="header-section animate__animated animate__fadeInDown">
+            <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+                <div>
+                    <h1 class="fw-bold mb-0 gradient-text">
+                        <i class="bi bi-database-gear"></i> Andrew's Data Analyzer
+                    </h1>
+                    <p class="text-muted mt-2 mb-0">
+                        <i class="bi bi-cloud-upload"></i> Upload file <code>.sql</code> (dump PostgreSQL) — 
+                        <strong>Analisis keuangan otomatis & real-time</strong>
+                    </p>
+                </div>
+                <div class="button-group d-flex align-items-center gap-2">
+                    <button id="btnLoginNav" onclick="openLoginModal()" class="btn btn-outline-primary btn-modern px-3 py-2">
+                        🔑 Login
+                    </button>
+                    <label for="sqlUpload" class="btn btn-primary btn-modern px-4 py-2 mb-0">
+                        <i class="bi bi-upload"></i> Upload SQL
+                    </label>
+                    <input type="file" id="sqlUpload" accept=".sql,.txt" style="display:none">
+                    <button id="exportAllBtn" class="btn btn-excel btn-modern px-4 py-2" disabled>
+                        <i class="bi bi-file-spreadsheet"></i> Ekspor Excel
+                    </button>
+                </div>
             </div>
-            <div class="button-group">
-                <label for="sqlUpload" class="btn btn-primary btn-modern px-4 py-2">
-                    <i class="bi bi-upload"></i> Upload SQL
-                </label>
-                <input type="file" id="sqlUpload" accept=".sql,.txt" style="display:none">
-                <button id="exportAllBtn" class="btn btn-excel btn-modern ms-2 px-4 py-2" disabled>
-                    <i class="bi bi-file-spreadsheet"></i> Ekspor Excel
+        </div>
+
+        <!-- NAVIGATION TABS -->
+        <ul class="nav nav-tabs modern-tabs mb-4" id="mainTab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#dashboard" type="button" role="tab">
+                    <i class="bi bi-speedometer2"></i> Dashboard
                 </button>
-            </div>
-        </div>
-    </div>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#profitloss" type="button" role="tab">
+                    <i class="bi bi-graph-up"></i> Laba-Rugi
+                </button>
+            </li>
+        </ul>
 
-    <ul class="nav nav-tabs modern-tabs mb-4" id="mainTab" role="tablist">
-        <li class="nav-item" role="presentation">
-            <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#dashboard" type="button" role="tab">
-                <i class="bi bi-speedometer2"></i> Dashboard
-            </button>
-        </li>
-        <li class="nav-item" role="presentation">
-            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#profitloss" type="button" role="tab">
-                <i class="bi bi-graph-up"></i> Laba-Rugi
-            </button>
-        </li>
-    </ul>
-
-    <div class="tab-content">
-        
-        <div class="tab-pane fade show active" id="dashboard" role="tabpanel">
-            <div class="row g-4 mb-4">
-                <div class="col-md-3 col-6">
-                    <div class="stat-card stat-card-primary animate__animated animate__fadeInUp">
-                        <div class="stat-icon"><i class="bi bi-receipt"></i></div>
-                        <div class="stat-info">
-                            <h3 id="statTrans">0</h3>
-                            <p>Total Transaksi</p>
+        <!-- TAB CONTENT -->
+        <div class="tab-content">
+            
+            <!-- TAB 1: DASHBOARD -->
+            <div class="tab-pane fade show active" id="dashboard" role="tabpanel">
+                <div class="row g-4 mb-4">
+                    <div class="col-md-3 col-6">
+                        <div class="stat-card stat-card-primary animate__animated animate__fadeInUp">
+                            <div class="stat-icon"><i class="bi bi-receipt"></i></div>
+                            <div class="stat-info">
+                                <h3 id="statTrans">0</h3>
+                                <p>Total Transaksi</p>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="col-md-3 col-6">
-                    <div class="stat-card stat-card-success animate__animated animate__fadeInUp" style="animation-delay: 0.1s">
-                        <div class="stat-icon"><i class="bi bi-cash-stack"></i></div>
-                        <div class="stat-info">
-                            <h3 id="statSale">0</h3>
-                            <p>Total Penjualan</p>
+                    <div class="col-md-3 col-6">
+                        <div class="stat-card stat-card-success animate__animated animate__fadeInUp" style="animation-delay: 0.1s">
+                            <div class="stat-icon"><i class="bi bi-cash-stack"></i></div>
+                            <div class="stat-info">
+                                <h3 id="statSale">0</h3>
+                                <p>Total Penjualan</p>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="col-md-3 col-6">
-                    <div class="stat-card stat-card-info animate__animated animate__fadeInUp" style="animation-delay: 0.2s">
-                        <div class="stat-icon"><i class="bi bi-people"></i></div>
-                        <div class="stat-info">
-                            <h3 id="statMember">0</h3>
-                            <p>Member Aktif</p>
+                    <div class="col-md-3 col-6">
+                        <div class="stat-card stat-card-info animate__animated animate__fadeInUp" style="animation-delay: 0.2s">
+                            <div class="stat-icon"><i class="bi bi-people"></i></div>
+                            <div class="stat-info">
+                                <h3 id="statMember">0</h3>
+                                <p>Member Aktif</p>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="col-md-3 col-6">
-                    <div class="stat-card stat-card-warning animate__animated animate__fadeInUp" style="animation-delay: 0.3s">
-                        <div class="stat-icon"><i class="bi bi-box-seam"></i></div>
-                        <div class="stat-info">
-                            <h3 id="statProd">0</h3>
-                            <p>Total Produk</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="row g-4 mb-4">
-                <div class="col-lg-7">
-                    <div class="card chart-card animate__animated animate__fadeInLeft">
-                        <div class="card-header bg-transparent border-0 pt-3">
-                            <h5 class="mb-0"><i class="bi bi-bar-chart-steps"></i> Tren Transaksi Harian</h5>
-                        </div>
-                        <div class="card-body">
-                            <canvas id="transChart"></canvas>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-5">
-                    <div class="card chart-card animate__animated animate__fadeInRight">
-                        <div class="card-header bg-transparent border-0 pt-3">
-                            <h5 class="mb-0"><i class="bi bi-pie-chart"></i> Metode Pembayaran</h5>
-                        </div>
-                        <div class="card-body">
-                            <canvas id="paymentChart"></canvas>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card data-table-card animate__animated animate__fadeInUp">
-                <div class="card-header bg-transparent">
-                    <h5 class="mb-0"><i class="bi bi-table"></i> Ringkasan Transaksi per Tanggal</h5>
-                </div>
-                <div class="card-body p-0">
-                    <div class="table-responsive">
-                        <table id="summaryTable" class="table table-hover mb-0">
-                            <thead>
-                                <tr>
-                                    <th>Tanggal</th>
-                                    <th>Jumlah Struk</th>
-                                    <th>Total Kotor (Jum)</th>
-                                    <th>Tunai Bersih</th>
-                                    <th>Mesin/QRIS (Card)</th>
-                                    <th>Diskon/Hemat</th>
-                                    <th class="table-success text-primary">FIX SETORAN SERVER</th>
-                                </tr>
-                            </thead>
-                            <tbody id="summaryBody">
-                                <tr>
-                                    <td colspan="7" class="text-center text-muted">
-                                        <i class="bi bi-cloud-arrow-up"></i> Silakan upload file SQL terlebih dahulu
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="tab-pane fade" id="profitloss" role="tabpanel">
-            <div class="row g-4 mt-2">
-                <div class="col-md-4">
-                    <div class="stat-card stat-card-primary">
-                        <div class="stat-icon"><i class="bi bi-wallet2"></i></div>
-                        <div class="stat-info">
-                            <h3 id="totalRevenue">Rp 0</h3>
-                            <p>Total Pendapatan</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="stat-card stat-card-danger">
-                        <div class="stat-icon"><i class="bi bi-cart-x"></i></div>
-                        <div class="stat-info">
-                            <h3 id="totalCost">Rp 0</h3>
-                            <p>Total HPP</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="stat-card stat-card-success">
-                        <div class="stat-icon"><i class="bi bi-piggy-bank"></i></div>
-                        <div class="stat-info">
-                            <h3 id="totalProfit" class="text-success">Rp 0</h3>
-                            <p>Laba Bersih</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-12">
-                    <div class="card chart-card animate__animated animate__fadeInUp">
-                        <div class="card-header bg-transparent border-0 pt-3">
-                            <h5 class="mb-0"><i class="bi bi-bar-chart-line"></i> Grafik Analisis Laba-Rugi Real-Time</h5>
-                        </div>
-                        <div class="card-body">
-                            <canvas id="profitLossChart"></canvas>
-                        </div>
-                    </div>
-                </div>
-                <div class="row mt-4">
-    <div class="col-12">
-        <div class="card shadow border-0" style="border-radius: 15px;">
-            <div class="card-header bg-dark text-white d-flex align-items-center justify-content-between" style="border-top-left-radius: 15px; border-top-right-radius: 15px;">
-                <h5 class="mb-0">🕵️ Radar Deteksi Anomali & Potensi Fraud</h5>
-                <span class="badge bg-danger" id="totalAnomali">0 Temuan</span>
-            </div>
-            <div class="card-body p-0">
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0">
-                        <thead class="table-light">
-                            <tr>
-                                <th>No. Nota</th>
-                                <th>Jenis Indikasi</th>
-                                <th>Detail Temuan</th>
-                                <th class="text-center">Status Level</th>
-                            </tr>
-                        </thead>
-                        <tbody id="fraudTableBody">
-                            <tr>
-                                <td colspan="4" class="text-center text-muted py-4">Belum ada data SQL yang dianalisis.</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-                <div class="col-12">
-                    <div class="card data-table-card">
-                        <div class="card-header bg-transparent">
-                            <h5 class="mb-0"><i class="bi bi-box-seam"></i> Ringkasan Laba-Rugi per Produk</h5>
-                        </div>
-                        <div class="card-body p-0">
-                            <div class="table-responsive">
-                                <table id="profitLossTable" class="table table-hover mb-0">
-                                    <thead>
-                                        <tr>
-                                            <th>PLU</th>
-                                            <th>Produk</th>
-                                            <th>Kategori</th>
-                                            <th>QTY Terjual</th>
-                                            <th>Total Penjualan</th>
-                                            <th>HPP Total</th>
-                                            <th>Laba Kotor</th>
-                                            <th>Margin</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="profitLossBody">
-                                        <tr>
-                                            <td colspan="8" class="text-center text-muted">
-                                                <i class="bi bi-cloud-arrow-up"></i> Silakan upload file SQL terlebih dahulu
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                    <div class="col-md-3 col-6">
+                        <div class="stat-card stat-card-warning animate__animated animate__fadeInUp" style="animation-delay: 0.3s">
+                            <div class="stat-icon"><i class="bi bi-box-seam"></i></div>
+                            <div class="stat-info">
+                                <h3 id="statProd">0</h3>
+                                <p>Total Produk</p>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div> </div> </div> <footer class="mt-5 pt-3 text-center text-muted border-top">
-        <i class="bi bi-database"></i> Andrew's Financial Analyzer | 
-        <i class="bi bi-graph-up"></i> Real-time Analytics | 
-        <i class="bi bi-shield-check"></i> Data Security
-    </footer>
-    
+
+                <div class="row g-4 mb-4">
+                    <div class="col-lg-7">
+                        <div class="card chart-card animate__animated animate__fadeInLeft">
+                            <div class="card-header bg-transparent border-0 pt-3">
+                                <h5 class="mb-0"><i class="bi bi-bar-chart-steps"></i> Tren Transaksi Harian</h5>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="transChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-5">
+                        <div class="card chart-card animate__animated animate__fadeInRight">
+                            <div class="card-header bg-transparent border-0 pt-3">
+                                <h5 class="mb-0"><i class="bi bi-pie-chart"></i> Metode Pembayaran</h5>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="paymentChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card data-table-card animate__animated animate__fadeInUp">
+                    <div class="card-header bg-transparent">
+                        <h5 class="mb-0"><i class="bi bi-table"></i> Ringkasan Transaksi per Tanggal</h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table id="summaryTable" class="table table-hover mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Tanggal</th>
+                                        <th>Jumlah Struk</th>
+                                        <th>Total Kotor (Jum)</th>
+                                        <th>Tunai Bersih</th>
+                                        <th>Mesin/QRIS (Card)</th>
+                                        <th>Diskon/Hemat</th>
+                                        <th class="table-success text-primary">FIX SETORAN SERVER</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="summaryBody">
+                                    <tr>
+                                        <td colspan="7" class="text-center text-muted">
+                                            <i class="bi bi-cloud-arrow-up"></i> Silakan upload file SQL terlebih dahulu
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 2: LABA RUGI -->
+            <div class="tab-pane fade" id="profitloss" role="tabpanel">
+                <div class="row g-4 mt-2">
+                    <div class="col-md-4">
+                        <div class="stat-card stat-card-primary">
+                            <div class="stat-icon"><i class="bi bi-wallet2"></i></div>
+                            <div class="stat-info">
+                                <h3 id="totalRevenue">Rp 0</h3>
+                                <p>Total Pendapatan</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="stat-card stat-card-danger">
+                            <div class="stat-icon"><i class="bi bi-cart-x"></i></div>
+                            <div class="stat-info">
+                                <h3 id="totalCost">Rp 0</h3>
+                                <p>Total HPP</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="stat-card stat-card-success">
+                            <div class="stat-icon"><i class="bi bi-piggy-bank"></i></div>
+                            <div class="stat-info">
+                                <h3 id="totalProfit" class="text-success">Rp 0</h3>
+                                <p>Laba Bersih</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <div class="card chart-card animate__animated animate__fadeInUp">
+                            <div class="card-header bg-transparent border-0 pt-3">
+                                <h5 class="mb-0"><i class="bi bi-bar-chart-line"></i> Grafik Analisis Laba-Rugi Real-Time</h5>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="profitLossChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- RADAR ANOMALI -->
+                    <div class="col-12 mt-4">
+                        <div class="card shadow border-0" style="border-radius: 15px;">
+                            <div class="card-header bg-dark text-white d-flex align-items-center justify-content-between" style="border-top-left-radius: 15px; border-top-right-radius: 15px;">
+                                <h5 class="mb-0">🕵️ Radar Deteksi Anomali & Potensi Fraud</h5>
+                                <span class="badge bg-danger" id="totalAnomali">0 Temuan</span>
+                            </div>
+                            <div class="card-body p-0">
+                                <div class="table-responsive">
+                                    <table class="table table-hover align-middle mb-0">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>No. Nota</th>
+                                                <th>Jenis Indikasi</th>
+                                                <th>Detail Temuan</th>
+                                                <th class="text-center">Status Level</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="fraudTableBody">
+                                            <tr>
+                                                <td colspan="4" class="text-center text-muted py-4">Belum ada data SQL yang dianalisis.</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- RINGKASAN PRODUK -->
+                    <div class="col-12 mt-4">
+                        <div class="card data-table-card">
+                            <div class="card-header bg-transparent">
+                                <h5 class="mb-0"><i class="bi bi-box-seam"></i> Ringkasan Laba-Rugi per Produk</h5>
+                            </div>
+                            <div class="card-body p-0">
+                                <div class="table-responsive">
+                                    <table id="profitLossTable" class="table table-hover mb-0">
+                                        <thead>
+                                            <tr>
+                                                <th>PLU</th>
+                                                <th>Produk</th>
+                                                <th>Kategori</th>
+                                                <th>QTY Terjual</th>
+                                                <th>Total Penjualan</th>
+                                                <th>HPP Total</th>
+                                                <th>Laba Kotor</th>
+                                                <th>Margin</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="profitLossBody">
+                                            <tr>
+                                                <td colspan="8" class="text-center text-muted">
+                                                    <i class="bi bi-cloud-arrow-up"></i> Silakan upload file SQL terlebih dahulu
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div> <!-- End row g-4 mt-2 -->
+            </div> <!-- End Tab Laba-Rugi -->
+        </div> <!-- End Tab Content -->
+
+        <!-- FOOTER SECTION -->
+        <footer class="mt-5 pt-3 text-center text-muted border-top">
+            <i class="bi bi-database"></i> Andrew's Financial Analyzer | 
+            <i class="bi bi-graph-up"></i> Real-time Analytics | 
+            <i class="bi bi-shield-check"></i> Data Security
+        </footer>
+
+        <div class="footer-credit-section mt-4 text-center">
+            <hr class="credit-divider">
+            <p class="credit-text text-muted">
+                Handcrafted with ❤️ by <strong>Andrew Dwiranto</strong> (Cah_Sragen_77, Indonesia)
+                | Connect with me: 
+                <a href="https://www.linkedin.com/in/yudi-dwiranto-cs77" target="_blank" rel="noopener noreferrer" class="social-link text-decoration-none">LinkedIn</a> •
+                <a href="https://www.instagram.com/cahsragen_77/" target="_blank" rel="noopener noreferrer" class="social-link text-decoration-none">Instagram</a> •
+                <a href="https://web.facebook.com/ydwiranto" target="_blank" rel="noopener noreferrer" class="social-link text-decoration-none">Facebook</a> • 
+                <a href="https://id.shp.ee/yudmwbm1?fromSource=whatsapp&smtt=0.0.3" target="_blank" rel="noopener noreferrer" class="social-link text-decoration-none">Shopee</a> •
+                <a href="https://www.tiktok.com/@selarasdirumah" target="_blank" rel="noopener noreferrer" class="social-link text-decoration-none">Tik-tok</a>
+            </p>
+            <p class="credit-ai text-muted small">
+                Built in collaboration with
+                <a href="https://google.com" target="_blank" class="gemini-link text-decoration-none fw-bold">
+                    <span class="gemini-sparkle">✦</span> GEMINI AI
+                </a>
+            </p>
+        </div>
+    </div> <!-- END MAIN CONTAINER -->
+
+    <!-- TOAST MESSAGE -->
     <div id="toastMsg" class="info-toast" style="display: none;">
         <div class="toast-content">
             <i class="bi bi-check-circle-fill"></i>
@@ -293,45 +329,12 @@
         </div>
     </div>
 
-    <div class="footer-credit-section mt-4 text-center">
-        <hr class="credit-divider">
-        <p class="credit-text text-muted">
-            Handcrafted with ❤️ by <strong>Andrew Dwiranto</strong> (Cah_Sragen_77, Indonesia) 
-            | Connect with me: 
-            <a href="www.linkedin.com/in/yudi-dwiranto-cs77" target="_blank" class="social-link text-decoration-none">LinkedIn</a> •
-            <a href="https://www.instagram.com/cahsragen_77/" target="_blank" class="social-link text-decoration-none">Instagram</a> •
-            <a href="https://web.facebook.com/ydwiranto" target="_blank" class="social-link text-decoration-none">Facebook</a> • 
-            <a href="https://id.shp.ee/yudmwbm1?fromSource=whatsapp&smtt=0.0.3" target="_blank" class="social-link text-decoration-none">Shopee</a> •
-            <a href="https://www.tiktok.com/@selarasdirumah" target="_blank" class="social-link text-decoration-none">Tik-tok</a>
-        </p>
-        <p class="credit-ai text-muted small">
-            Built in collaboration with
-            <a href="https://google.com" target="_blank" class="gemini-link text-decoration-none fw-bold">
-                <span class="gemini-sparkle">✦</span> GEMINI AI
-            </a>
-        </p>
-    </div>
-    <!-- Tombol WhatsApp Mengambang -->
-<a href="https://wa.me/6281389188903?text=Assalamu.alaikum...%20Halo!%20Selamat%20[Pagi,%20Siang,%20Sore]%20Saya%20baru%20saja%20melihat%20web%20aplikasi%20Anda%20dan%20tertarik%20dengan%20solusinya.%20Kalau%20ada%20waktu%20luang,%20boleh%20kita%20mengobrol%20santai%20dulu%20untuk%20melihat%20potensi%20kerja%20sama%20ke%20depan%20?%20Terima%20kasih." class="wa-floating" target="_blank" rel="noopener noreferrer">
-  <svg viewBox="0 0 24 24" xmlns="http://w3.org">
-    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L0 24l6.335-1.662c1.746.953 3.71 1.458 5.704 1.459h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
-  </svg>
-</a>
-</div> 
+    <!-- TOMBOL WHATSAPP FLOATING -->
+    <a href="https://wa.me/6281389188903?text=Assalamu.alaikum...%20Halo!%20Selamat%20[Pagi,%20Siang,%20Sore]%20Saya%20baru%20saja%20melihat%20web%20aplikasi%20Anda%20dan%20tertarik%20dengan%20solusinya.%20Kalau%20ada%20waktu%20luang,%20boleh%20kita%20mengobrol%20santai%20dulu%20untuk%20melihat%20potensi%20kerja%20sama%20ke%20depan%20?%20Terima%20kasih." class="wa-floating" target="_blank" rel="noopener noreferrer">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L0 24l6.335-1.662c1.746.953 3.71 1.458 5.704 1.459h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+        </svg>
+    </a>
 
-
-
-    <!-- TABEL HEADER / NAVBAR -->
-<button id="btnLoginNav" onclick="openLoginModal()" style="padding: 8px 16px; background-color: #0d6efd; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">
-    🔑 Login
-</button>
-
-
-    
-
-    
-
-   
 </body>
-    
 </html>
